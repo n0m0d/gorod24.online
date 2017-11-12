@@ -1,0 +1,6 @@
+RewriteEngine On
+RewriteBase /admin/
+php_value max_input_vars 5000
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /admin/index.php [L,QSA]

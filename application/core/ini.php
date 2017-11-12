@@ -1,0 +1,93 @@
+<?php
+if (!defined('_BR_'))
+   define('_BR_',chr(13).chr(10));
+if(!class_exists('ini')){
+class ini {
+	
+    public $filename;
+    public $arr;
+	public $is_updated = false;
+	
+    function __construct($file = false){
+        if ($file)
+            $this->loadFromFile($file);
+    }
+	
+    function initArray(){
+        $this->arr = parse_ini_file($this->filename, true);
+    }
+	
+    function loadFromFile($file){
+        $result = true;
+        $this->filename = $file;
+        if (file_exists($this->filename) && is_readable($this->filename)){
+            $this->initArray();
+        }
+        else {
+			file_put_contents($this->filename, '');
+            $result = $this->loadFromFile($this->filename);
+		}
+        return $result;
+    }
+	
+    function read($section, $key, $def = ''){
+        if (isset($this->arr[$section][$key])){
+            return $this->arr[$section][$key];
+        } else
+            return $def;
+    }
+	
+    function write($section, $key, $value){
+        if (is_bool($value))
+            $value = $value ? 1 : 0;
+        $this->arr[$section][$key] = $value;
+		$this->is_updated = true;
+    }
+	
+    function eraseSection($section){
+        if (isset($this->arr[$section])){
+            unset($this->arr[$section]);
+			$this->is_updated = true;
+		}
+    }
+	
+    function deleteKey($section, $key){
+        if (isset($this->arr[$section][$key])){
+            unset($this->arr[$section][$key]);
+			$this->is_updated = true;
+		}
+    }
+	
+    function readSections(&$array){
+        $array = array_keys($this->arr);
+        return $array;
+    }
+	
+    function readKeys($section, &$array){
+        if (isset($this->arr[$section])){
+            $array = array_keys($this->arr[$section]);
+            return $array;
+        }
+        return array();
+    }
+	
+    function updateFile(){
+		if($this->is_updated){
+			$result = '';
+			foreach ($this->arr as $sname=>$section){
+				$result .= '[' . $sname . ']' . _BR_;
+				foreach ($section as $key=>$value){
+					$result .= $key .'='.$value . _BR_;
+				}
+				$result .= _BR_;
+			}
+				file_put_contents($this->filename, $result);
+				return true;
+		}
+    }
+	
+    function __destruct(){
+        $this->updateFile();
+    }
+}
+}

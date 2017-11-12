@@ -1,0 +1,667 @@
+@import "bourbon"
+@import "fonts"
+@import "libs"
+@import "vars"
+
+.search-input::-webkit-input-placeholder
+	color: #a2a2a2
+	opacity: 1
+	font-family: "Roboto-Light", sans-serif
+	font-size: 12px
+
+.search-input:-moz-placeholder
+	color: #a2a2a2
+	opacity: 1
+	font-family: "Roboto-Light", sans-serif
+	font-size: 12px
+
+.search-input::-moz-placeholder
+	color: #a2a2a2
+	opacity: 1
+	font-family: "Roboto-Light", sans-serif
+	font-size: 12px
+
+.search-input:-ms-input-placeholder
+	color: #a2a2a2
+	opacity: 1
+	font-family: "Roboto-Light", sans-serif
+	font-size: 12px
+
+.filter-input::-webkit-input-placeholder
+	color: $black
+	opacity: 1
+	font-family: "Roboto-Light", sans-serif
+	font-weight: 400
+	font-size: 14px
+
+.filter-input:-moz-placeholder
+	color: $black
+	opacity: 1
+	font-family: "Roboto-Light", sans-serif
+	font-weight: 400
+	font-size: 14px
+
+.filter-input::-moz-placeholder
+	color: $black
+	opacity: 1
+	font-family: "Roboto-Light", sans-serif
+	font-weight: 400
+	font-size: 14px
+
+.filter-input:-ms-input-placeholder
+	color: $black
+	opacity: 1
+	font-family: "Roboto-Light", sans-serif
+	font-weight: 400
+	font-size: 14px
+
+body input:focus:required:invalid,
+body textarea:focus:required:invalid
+	color: #666
+body input:required:valid,
+body textarea:required:valid
+	color: #666
+
+body
+	font-size: 14px
+	min-width: 320px
+	position: relative
+	line-height: 1.75
+	font-family: $default-font
+	overflow-x: hidden
+	margin: 0
+
+h2
+	font-size: 22px
+	line-height: 22px
+	margin: 0
+	color: $black
+
+/* Buttons */
+
+.button-wrap, .button-wrap-inverse
+	border: 1px solid $accent
+	background-color: transparent
+	margin-right: 16.5px
+	display: inline-block
+	transition: all .5s ease
+	vertical-align: top
+	border-radius: .25em
+	margin-top: 15px 
+	&:hover
+		background-color: $accent
+		.button
+			text-decoration: none
+			color: #fff
+	.button
+		transition: all .5s ease
+		text-transform: capitalize
+		color: $accent
+		text-decoration: none
+		display: block
+		padding: 5px 21.5px
+
+.right
+	float: right
+	.button-wrap
+		border: none
+		margin: 15px 0 0 15px
+		&:hover
+			background-color: transparent
+			.button
+				color: $accent
+		.button
+			padding: 0
+			font-size: 22px
+
+.button-wrap-inverse
+	background-color: $accent
+	.button
+		color: #fff
+		padding: 5px 12px
+		span
+			padding: 0 12px 0 0
+	&:hover
+		background-color: transparent
+		.button
+			color: $accent
+
+.img-responsive
+	display: block
+	max-width: 100%
+	height: auto
+
+/* Mobile menu */
+
+.mobile-menu
+	height: 100%
+	position: fixed
+	min-width: 285px
+	background-color: #000
+	z-index: 999
+	left: -285px
+	overflow: auto
+	overflow-scrolling: touch
+	visibility: hidden
+	.main-menu
+		text-align: right
+		.arrows-remove-wrap
+			background-color: #FFF
+			width: 50.5px
+			height: 50.5px
+			cursor: pointer
+			display: inline-block
+			.arrows-remove
+				width: 50px
+				height: 50px
+				background-image: url("../img/icons/arrows_remove.svg")
+				background-position: center
+				background-size: cover
+				background-repeat: no-repeat
+		ul
+			text-align: left
+			margin: 0
+			padding: 25px 25px
+			li
+				list-style-type: none
+				display: block
+				margin: 10px 10px 10px 10px
+				position: relative
+				a,p
+					text-decoration: none
+					cursor: pointer
+					display: block
+					color: #fff
+					text-transform: uppercase
+					font-size: 12.5px
+					letter-spacing: 1px
+					transition: all .25s ease
+					padding: 0px 0px 10px 0px
+					position: relative
+					margin: 0
+					&:before
+						content: ""
+						position: absolute
+						width: 100%
+						height: 2px
+						bottom: 0
+						left: 0
+						background-color: $accent
+						visibility: hidden
+						transform: scaleX(0)
+						transition: all 0.3s ease-in-out 0s
+					&:hover:before
+						visibility: visible
+						transform: scaleX(1)
+					ul
+						li
+							a,p
+								color: #fff
+			ul
+				padding: 0 0 0 15px
+		.search
+			text-align: center
+			width: 100%
+			input
+				width: 210px
+			&:before
+				right: 50px
+
+/* Header */
+
+.main-header
+	background-color: #FFF
+	border-bottom: 1px solid #f6f6f6
+	display: flex
+	justify-content: space-between
+	width: 100%
+	min-height: 50px
+	height: 100%
+	padding: 0 25px 0 25px
+	position: relative
+	.arrows-hamburger-wrap
+		width: 50px
+		height: 50px
+		cursor: pointer
+		display: none
+		position: absolute
+		right: calc(50% - 25px)
+		top: 0
+		.arrows-hamburger
+			width: 50px
+			height: 50px
+			background-image: url("../img/icons/arrows_hamburger.svg")
+			background-position: center
+			background-size: cover
+			background-repeat: no-repeat
+
+.head-block-1
+	flex: 1 0 20%
+	text-align: left
+
+.head-block-2
+	flex: 1 1 100%
+	text-align: center
+
+.head-block-3
+	flex: 1 0 16%
+	text-align: right
+
+/* Logo */
+
+.logo
+	padding: 10px 0px
+	font-family: "Intro", sans-serif
+	font-size: 17px
+	line-height: 17px
+	text-transform: uppercase
+	padding-right: 12px
+	display: inline-block
+	vertical-align: top
+	&-left
+		color: $black
+		display: inline-block
+		line-height: 30px
+	&-right
+		background-color: $accent
+		width: 30px
+		height: 25px
+		border-radius: .25em
+		text-align: center
+		display: inline-block
+		&-text
+			color: #fff
+			line-height: 25px
+
+/* Logo Descr */
+
+.descr
+	margin: 10px 0px
+	display: inline-block
+	border-left: 1px solid #cacaca
+	vertical-align: top
+	&-text
+		margin-left: 12px
+		color: #cacaca
+		font-size: 12px
+		font-family: "Roboto-Light", sans-serif
+		line-height: 15px
+
+/* Header menu */
+
+.menu
+	display: inline-block
+	&-ul
+		margin: 0
+		padding: 0
+		font-size: 0
+		&-li
+			display: inline-block
+			list-style-type: none
+			height: 50px
+			line-height: 50px
+			border-right: 1px solid transparent
+			border-left: 1px solid transparent
+			transition: all .5s ease
+			&:hover
+				border-color: #f6f6f6
+			&-a, &-light
+				border-bottom: 3px solid transparent
+				padding: 0 20px
+				font-size: 15px
+				text-transform: capitalize
+				color: $black
+				text-decoration: none
+				display: block
+				height: 100%
+				width: 100%
+				transition: all .5s ease
+				position: relative
+				&:hover
+					border-color: $accent
+					text-decoration: none
+					color: $black
+				&-img
+					margin-right: 12px
+					color: $accent
+					font-size: 15px
+			&-light
+				padding: 0 20px 0 20px
+				font-family: "Roboto-Light", sans-serif
+				color: #b8b8b8
+				&:hover
+					color: #b8b8b8
+		&-active
+			border-color: #f6f6f6
+			.menu-ul-li-a
+				border-color: $accent
+
+/* Search */
+
+.search
+	display: inline-block
+	padding: 10px 20px 10px 20px
+	position: relative
+	input
+		width: 210px
+		height: 30px
+		background-color: #e9e9e9
+		border: none
+		padding: 0 35px 0 15px
+		border-radius: .25em
+		transition: all .5s ease
+		border: 1px solid transparent
+		outline: none
+		&:focus
+			border-color: $accent
+	&:before
+		content: "\f002"
+		display: inline-block
+		font-family: FontAwesome
+		font-style: normal
+		font-weight: normal
+		line-height: 1
+		font-smoothing: antialiased
+		font-smoothing: grayscale
+		position: absolute
+		top: 18px
+		right: 30px
+		color: #999
+
+/* Authorization */
+
+.auth
+	display: inline-block
+	&-ul
+		margin: 0
+		padding: 0
+		font-size: 0
+		&-li
+			display: inline-block
+			list-style-type: none
+			height: 50px
+			line-height: 50px
+			transition: all .5s ease
+			&-a, &-light
+				padding: 0 20px 0 0px
+				font-size: 15px
+				text-transform: capitalize
+				color: $black
+				text-decoration: none
+				display: block
+				height: 100%
+				width: 100%
+				transition: all .5s ease
+				position: relative
+				&:hover
+					text-decoration: none
+					color: $accent
+				&-img
+					margin-right: 12px
+					color: $accent
+					font-size: 15px
+			&-light
+				padding: 0 0 0 20px
+				font-family: "Roboto-Light", sans-serif
+				color: #b8b8b8
+				border-left: 1px solid #f6f6f6
+				&:hover
+					color: $black
+
+/* #1 */
+
+.sections
+	display: flex
+	width: 100%
+	min-height: 100vh
+	height: 100%
+
+.sectleft
+	background-color: #373e48
+	flex: 1 0 90px
+	&-item
+		width: 100%
+		height: 80px
+		text-align: center
+		cursor: pointer
+		transition: all .5s ease
+		border-left: 3px solid transparent
+		&:hover
+			background-color: #333943
+			border-color: #ff9600
+			.sectleft-item-text
+				color: #fff
+		&-icon
+			color: $accent
+			padding-top: 15px
+			display: block
+			font-size: 16px
+		&-text
+			transition: all .5s ease
+			margin: 0
+			color: rgba(255,255,255, .5)
+			display: block
+			line-height: 12px
+			font-size: 12px
+			margin-top: 10px
+	&-active
+		background-color: #333943
+		border-color: #ff9600
+		.sectleft-item-text
+			color: #fff
+
+.sectcenter
+	flex: 1 0 240px
+	background-color: #fff
+	padding: 15px 25px
+	ul
+		margin: 0
+		padding: 25px 0 0 20px
+		li
+			display: block
+			padding: 0 0 20px 0
+			position: relative
+			a,p
+				text-decoration: none
+				cursor: pointer
+				display: block
+				font-family: "Roboto-Medium", sans-serif
+				color: $black
+				line-height: 14px
+				&::before
+					content: "\f105"
+					display: block
+					font-family: FontAwesome
+					color: $accent
+					position: absolute
+					left: -15px
+					top: 0px
+					font-weight: bold
+					line-height: 1
+					transition: all .25s ease
+			ul
+				padding: 20px 0 0 15px
+				display: none
+				.sectcenter-li
+					float: none
+					width: 100%
+					padding: 0
+					margin: 0
+					position: relative
+					padding-bottom: 20px
+					a,p
+						margin: 0
+						font-family: "Roboto-Light", sans-serif
+						color: $gray
+						&::before
+							content: "\f105"
+							display: block
+							font-family: FontAwesome
+							color: $accent
+							position: absolute
+							left: -15px
+							top: 0px
+							font-weight: bold
+							line-height: 1
+							transition: all .25s ease
+					ul
+						display: none
+						li
+							position: relative
+							&:last-child
+								padding-bottom: 0
+							a,p
+								&::before
+									content: ''
+									width: 5px
+									height: 5px
+									background-color: $accent
+									display: block
+									position: absolute
+									left: -15px
+									top: 4px
+									border-radius: 5em
+
+.changed
+	&::before
+		transform: rotate(90deg)
+
+.sectright
+	background-color: #f7faff
+	flex: 1 1 100%
+	padding: 15px 25px
+	&-breadcrumbs
+		margin-bottom: 20px
+		a,p
+			color: #b8b8b8
+			text-decoration: none
+			font-family: "Roboto-Light", sans-serif
+			font-size: 12px
+			display: inline-block
+			margin: 0
+		a
+			transition: all .5s ease
+			&:hover
+				color: $black
+		span
+			color: $accent
+			margin: 0 10px
+	h2
+		margin-bottom: 15px
+	&-filters
+		padding: 15px 20px
+		width: 100%
+		background-color: #FFF
+		margin-bottom: 20px
+		&-nav
+			&-menu
+				padding: 0
+				margin: 0
+				border-bottom: 1px solid #f6f6f6
+				margin-bottom: 10px
+				&-li
+					display: inline-block
+					list-style-type: none
+					padding: 0 5px
+					margin-right: 25px
+					border-bottom: 3px solid transparent
+					transition: all .5s ease
+					&:last-child
+						border: none
+					&:hover
+						border-color: $accent
+					a
+						color: $black
+						font-size: 15px
+						text-decoration: none
+						display: block
+						i
+							color: #ff9600
+		&-form
+			display: inline-block
+			&-label
+				padding-top: 15px
+				label
+					margin: 0
+					input
+						border-radius: .25em
+						display: inline-block
+						border: 1px solid #e1e1e1
+						min-width: 435px
+						padding: 5px 15px
+						font-family: "Roboto-Light", sans-serif
+						transition: all .5s ease
+						&:focus
+							border-color: $accent
+	&-table
+		padding: 15px 20px
+		width: 100%
+		background-color: #FFF
+		.button-wrap, .button-wrap-inverse, .filter-select
+			margin-top: 0
+			margin-bottom: 15px
+		&-form
+			display: inline-block
+		&-content
+			table
+				width: 100%
+				border-collapse: collapse
+				tr
+					th
+						background-color: #e1e1e1
+						border-right: 1px solid #fff
+						text-align: center
+						padding: 5px 20px
+						p
+							white-space: nowrap
+							font-family: "Roboto-Medium", sans-serif
+							color: $black
+							font-weight: 400
+							margin: 0
+					td
+						text-align: center
+						padding: 5px 20px
+						p
+							white-space: nowrap
+							color: $black
+							font-family: "Roboto-Light", sans-serif
+							font-size: 13px
+							margin: 0
+							span
+								color: $accent
+					&:nth-child(2n+1)
+						background-color: #f8f8f8
+					.left-head, .left-content
+						text-align: left
+						width: 100%
+					.left-content
+						p
+							font-family: $default-font
+							color: $accent
+							font-size: 14px
+
+.selectize-control
+	line-height: 10.5px
+	.selectize-input
+		width: 215px
+		padding: 7.25px 15px
+		border-radius: 0
+		border: 1px solid #e1e1e1
+		box-shadow: none
+		margin-right: 16.5px
+		border-radius: .25em
+		.item
+			font-family: "Roboto-Light", sans-serif
+		&:after
+			border-color: $accent transparent transparent transparent !important
+	.selectize-input.focus
+		border-color: $accent
+	.selectize-dropdown
+		border-radius: .25em
+		border-color: $accent
+		.selectize-dropdown-content
+			.option
+				font-family: "Roboto-Light", sans-serif
+				font-size: 15px
+
+@import "media" // Всегда в конце
