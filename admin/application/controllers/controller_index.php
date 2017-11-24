@@ -6,6 +6,7 @@ class controller_index extends Controller
 		$this->view = new View('index.tpl');
 		$this->view->setTemplatesFolder(ADMINDIR.'/application/views/');
 		$this->view->headers['title'] = 'Главная | Администрирование Полезного радио';
+		$this->view->data['main']['header'] = 'Администрирование';
 	}
 	
 	function action_index($array = array()){

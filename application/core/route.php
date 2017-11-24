@@ -41,41 +41,24 @@ class Route
 		Registry::set('REQUEST_URI', $REQUEST_URI);
 		
 		$routes = explode('/', urldecode($REQUEST_URI));
-		$params = array();
 		$routes = array_filter($routes,function($el){ return !empty($el);});
 		$newroutes=array();
 		foreach ($routes as $i => $route){$newroutes[]=$route;}
-		$routes = $newroutes;
+		$routes = $newroutes; $actions=[];
 		foreach ($routes as $i => $route){
 			if($i == 0) { $controller = $route; 	Registry::set('controller', $controller);}
-			elseif($i == 1) { $action = $route; 	Registry::set('action', $action); }
-			else { $params[] = $route; }
+			else { $actions[]=$route;}
 		}
-		
-		$controller_name = 'controller_'.$controller;
-		$action_name = 'action_'.$action;
+		$controller_name = 'controller_'.str_replace(array('-', '.'), '_',$controller);
 				
 		// Подцепляем файл с классом контроллера
-		$controller_file = strtolower($controller_name).'.php';
-		$controller_path = "application/controllers/".$controller_file; 
+		$controller_path = APPDIR."/application/controllers/".strtolower($controller_name).'.php'; 
 		// Если файл контроллера существует, значит его подключаем и определяем. что страница является статической
 		if(file_exists($controller_path)){
-			require_once 'application/controllers/'.$controller_file; Registry::set('page_type', 'static'); 
-			$controller_name = str_replace('-', '_', $controller_name);
+			require_once $controller_path;
 			if (class_exists($controller_name)){
-				// создаем контроллер
 				$controller_obj = new $controller_name();
-				$controller_obj->domain = $domain;
-				$controller_obj->url = 'http://' . $controller_obj->domain;
-				$action = $action_name; 
-				if(method_exists($controller_name, $action_name)){
-					// вызываем действие контроллера
-					//$controller_obj->$action();
-					call_user_func_array(array($controller_obj, $action), $params);
-				}
-				else {
-					Route::ErrorPage404();
-				}
+				$this->runAction($controller_obj, $actions);
 			}	else Route::ErrorPage404(); 
 		}
 		elseif(is_registered_controller($controller)) {
@@ -96,6 +79,23 @@ class Route
 			else Route::ErrorPage404(); 
 			} else Route::ErrorPage404(); 
 		}
+	}
+	
+	private function runAction($controller, $actions, $params=array()){
+		if(!empty($actions)){
+			$action_name = 'action_'.str_replace(array('-', '.'), '_',implode('_', $actions));
+			if(method_exists($controller, $action_name)){
+				call_user_func_array(array($controller, $action_name), array($params));
+			} else {
+				$param = array_pop($actions);
+				array_unshift($params, $param);
+				$this->runAction($controller, $actions, $params);
+			}
+		}
+		elseif(method_exists($controller, 'action_index')) {
+			call_user_func_array(array($controller, 'action_index'), array($params));
+		}
+		else Route::ErrorPage404();
 	}
 	
 	public static function ErrorPage404()	{

@@ -1,6 +1,6 @@
 <?php
 class AdminList {
-	private $_model, $_model_where, $_columns, $_attrs=array(), $_items=null, $_limit = 30, $_start = 0, $_page = 1, $_tablename, $_primary, $_modelcolumns, $_count;
+	private $_model, $_model_where, $_model_order, $_columns, $_attrs=array(), $_items=null, $_limit = 30, $_start = 0, $_page = 1, $_tablename, $_primary, $_modelcolumns, $_count;
 	
 	function __construct($options = array()){
 		if(!empty($options)){
@@ -25,6 +25,9 @@ class AdminList {
 			if(isset($options['where'])){
 				$this->_model_where = $options['where'];
 			} else $this->_model_where = "1";
+			if(isset($options['order'])){
+				$this->_model_order = $options['order'];
+			} else $this->_model_order = null;
 			if(isset($options['columns'])){
 				$this->_columns = $options['columns'];
 			}
@@ -67,7 +70,7 @@ class AdminList {
 		$thead = '<thead><tr>'.$thead.'</tr></thead>';
 		if(is_null($this->_items)){
 			$this->_count = $this->_model->getCountWhere($this->_model_where);
-			$rows = $this->_model->getItemsWhere($this->_model_where, null, $this->_start, $this->_limit);
+			$rows = $this->_model->getItemsWhere($this->_model_where, $this->_model_order, $this->_start, $this->_limit);
 		} else $rows = $this->_items;
 		foreach($rows as $row){
 			$tr = '<tr id="'.$this->_tablename.'-row-'.$row[$this->_primary].'">';
@@ -107,7 +110,7 @@ class AdminList {
 }
 
 class AdminPage {
-	private $_model=null, $_model_where=null, $_fields=null, $_item=null, $_tablename, $_primary, $_modelcolumns, $_action;
+	private $_model=null, $_model_where=null, $_fields=null, $_item=null, $_tablename, $_primary, $_modelcolumns, $_action, $_form_start=false;
 	
 	function __construct($options = array()){
 		if(!empty($options)){
@@ -143,7 +146,8 @@ class AdminPage {
 			}
 			if(isset($options['action'])){
 				$this->_action = $options['action'];
-			} else $this->_action = Registry::get('REQUEST_URI');
+				$this->_form_start = true;
+			} //else $this->_action = Registry::get('REQUEST_URI');
 		}
 	}
 	
@@ -154,11 +158,11 @@ class AdminPage {
 	}
 	
 	public function get(){
-		$result = '<form class="sectright-filters-form" action="'.$this->_action.'">';
+		if($this->_form_start)$result = AdminPage::formOpen([ "action"=>$this->_action ]);
 		if(is_array($this->_fields))foreach($this->_fields as $i => $field){
 			$result .= AdminPage::getFormObject($field, $this->_item);
 		}	
-		$result .= '</form>';
+		if($this->_form_start)$result .= AdminPage::formClose();
 		return $result;
 	
 	}
@@ -169,16 +173,24 @@ class AdminPage {
 			if(isAssoc($object)){
 				if(!empty($object['type']))
 				switch($object['type']){
+					case "formOpen": { $content = AdminPage::formOpen($object); break;}
+					case "formClose": { $content = AdminPage::formClose(); break;}
+					case "line": { $content = AdminPage::lineField($object, $item[$object['name']]); break;}
 					case "hidden": { $content = AdminPage::hiddenField($object, $item[$object['name']]); break;}
 					case "text": { $content = AdminPage::textField($object, $item[$object['name']]); break;}
 					case "mediumText": { $content = AdminPage::mediumTextField($object, $item[$object['name']]); break;}
 					case "editor": { $content = AdminPage::tinyEditor($object, $item[$object['name']]); break;}
 					case "number": { $content = AdminPage::numberField($object, $item[$object['name']]); break;}
+					case "password": { $content = AdminPage::passwordField($object, $item[$object['name']]); break;}
 					case "switch": { $content = AdminPage::switchField($object, $item[$object['name']]); break;}
 					case "check": { $content = AdminPage::checkField($object, $item[$object['name']]); break;}
 					case "date": { $content = AdminPage::dateField($object, $item[$object['name']]); break;}
 					case "time": { $content = AdminPage::timeField($object, $item[$object['name']]); break;}
 					case "datetime": { $content = AdminPage::datetimeField($object, $item[$object['name']]); break;}
+					case "select": { $content = AdminPage::selectField($object, $item[$object['name']]); break;}
+					case "button": { $content = AdminPage::buttonField($object, $item[$object['name']]); break;}
+					case "submit": { $content = AdminPage::submitField($object, $item[$object['name']]); break;}
+					case "filesUploader": { $content = AdminPage::filesUploaderField($object, $item[$object['name']]); break;}
 					
 					default:{ $content = AdminPage::textField($object, $item[$object['name']]); break;}
 				}
@@ -201,10 +213,28 @@ class AdminPage {
 		return "\n<style>\n".$css."\n</style>";
 	}
 	
+	public static function formOpen($object){
+		$uniq=uniqid();
+		if(!isset($object['id'])) $object['id'] = 'form-'.$uniq;
+		if(!isset($object['class'])) $object['class'] = '';
+		if(!isset($object['action'])) $object['action'] = Registry::get('REQUEST_URI');
+		if(!isset($object['method'])) $object['method'] = 'post';
+		if(!isset($object['attrs'])) $object['attrs'] = [];
+		$attrs = ''; foreach($object['attrs'] as $key=>$val){ $attrs .= $key.'="'.addslashes($val).'" '; }
+		
+		return '
+		<form class="sectright-filters-form '.$object['class'].'" action="'.$object['action'].'" method="'.$object['method'].'" id="'.$object['id'].'" '.$attrs.'>
+		';
+	}
+	
+	public function formClose(){
+		return '</form>';
+	}
+	
 	public static function hiddenField($object, $value=null){
 		$uniq=uniqid();
-		if(!isset($object['id'])) $object['id'] = 'text-'.$uniq;
-		if(!isset($object['name'])) $object['name'] = 'text-'.$uniq;
+		if(!isset($object['id'])) $object['id'] = 'hidden-'.$uniq;
+		if(!isset($object['name'])) $object['name'] = 'hidden-'.$uniq;
 		if(!isset($object['class'])) $object['class'] = '';
 		if(!isset($object['value'])) $object['value'] = $value;
 		if(!isset($object['attrs'])) $object['attrs'] = [];
@@ -214,7 +244,7 @@ class AdminPage {
 		<input id="'.$object['id'].'" class="'.$object['class'].'" name="'.$object['name'].'" type="hidden" value="'.$object['value'].'" '.$attrs.'>
 		';
 	}
-	
+
 	public static function textField($object, $value=null){
 		$uniq=uniqid();
 		if(!isset($object['id'])) $object['id'] = 'text-'.$uniq;
@@ -233,11 +263,27 @@ class AdminPage {
 		';
 	}
 	
-	public static function mediumTextField($object, $value=null){
+	public static function lineField($object, $value=null){
 		$uniq=uniqid();
 		if(!isset($object['id'])) $object['id'] = 'text-'.$uniq;
+		if(!isset($object['content'])) $object['content'] = '';
+		if(!isset($object['class'])) $object['class'] = '';
+		if(!isset($object['attrs'])) $object['attrs'] = [];
+		$attrs = ''; foreach($object['attrs'] as $key=>$val){ $attrs .= $key.'="'.addslashes($val).'" '; }
+		return '
+			<div class="sectright-filters-form-label">
+				<p id="'.$object['id'].'" class="filter-input '.$object['class'].'" '.$attrs.'>
+					'.$object['content'].'
+				</p>
+			</div>
+		';
+	}
+	
+	public static function mediumTextField($object, $value=null){
+		$uniq=uniqid();
+		if(!isset($object['id'])) $object['id'] = 'medium-text-'.$uniq;
 		if(!isset($object['title'])) $object['title'] = '';
-		if(!isset($object['name'])) $object['name'] = 'text-'.$uniq;
+		if(!isset($object['name'])) $object['name'] = 'medium-text-'.$uniq;
 		if(!isset($object['class'])) $object['class'] = '';
 		if(!isset($object['value'])) $object['value'] = $value;
 		if(!isset($object['attrs'])) $object['attrs'] = [];
@@ -253,9 +299,9 @@ class AdminPage {
 	
 	public static function tinyEditor($object, $value=null){
 		$uniq=uniqid();
-		if(!isset($object['id'])) $object['id'] = 'text-'.$uniq;
+		if(!isset($object['id'])) $object['id'] = 'editor-text-'.$uniq;
 		if(!isset($object['title'])) $object['title'] = '';
-		if(!isset($object['name'])) $object['name'] = 'text-'.$uniq;
+		if(!isset($object['name'])) $object['name'] = 'editor-text-'.$uniq;
 		if(!isset($object['class'])) $object['class'] = '';
 		if(!isset($object['value'])) $object['value'] = $value;
 		if(!isset($object['attrs'])) $object['attrs'] = [];
@@ -311,9 +357,9 @@ class AdminPage {
 	
 	public static function numberField($object, $value=null){
 		$uniq=uniqid();
-		if(!isset($object['id'])) $object['id'] = 'text-'.$uniq;
+		if(!isset($object['id'])) $object['id'] = 'number-'.$uniq;
 		if(!isset($object['title'])) $object['title'] = '';
-		if(!isset($object['name'])) $object['name'] = 'text-'.$uniq;
+		if(!isset($object['name'])) $object['name'] = 'number-'.$uniq;
 		if(!isset($object['class'])) $object['class'] = '';
 		if(!isset($object['value'])) $object['value'] = $value;
 		if(!isset($object['attrs'])) $object['attrs'] = [];
@@ -327,11 +373,29 @@ class AdminPage {
 		';
 	}
 	
+	public static function passwordField($object, $value=null){
+		$uniq=uniqid();
+		if(!isset($object['id'])) $object['id'] = 'password-'.$uniq;
+		if(!isset($object['title'])) $object['title'] = '';
+		if(!isset($object['name'])) $object['name'] = 'password-'.$uniq;
+		if(!isset($object['class'])) $object['class'] = '';
+		if(!isset($object['value'])) $object['value'] = $value;
+		if(!isset($object['attrs'])) $object['attrs'] = [];
+		$attrs = ''; foreach($object['attrs'] as $key=>$val){ $attrs .= $key.'="'.addslashes($val).'" '; }
+		return '
+			<div class="sectright-filters-form-label">
+				<label><span class="title">'.$object['title'].':</span>
+					<input id="'.$object['id'].'" class="filter-input '.$object['class'].'" name="'.$object['name'].'" type="password" value="'.$object['value'].'" placeholder="'.$object['title'].'" '.$attrs.'>
+				</label>
+			</div>
+		';
+	}
+	
 	public static function switchField($object, $value=0){
 		$uniq=uniqid();
-		if(!isset($object['id'])) $object['id'] = 'text-'.$uniq;
+		if(!isset($object['id'])) $object['id'] = 'switch-'.$uniq;
 		if(!isset($object['title'])) $object['title'] = '';
-		if(!isset($object['name'])) $object['name'] = 'text-'.$uniq;
+		if(!isset($object['name'])) $object['name'] = 'switch-'.$uniq;
 		if(!isset($object['class'])) $object['class'] = '';
 		if(!isset($object['value'])) $object['value'] = $value;
 		if(!isset($object['attrs'])) $object['attrs'] = [];
@@ -346,9 +410,9 @@ class AdminPage {
 	
 	public static function checkField($object, $value=0){
 		$uniq=uniqid();
-		if(!isset($object['id'])) $object['id'] = 'text-'.$uniq;
+		if(!isset($object['id'])) $object['id'] = 'check-'.$uniq;
 		if(!isset($object['title'])) $object['title'] = '';
-		if(!isset($object['name'])) $object['name'] = 'text-'.$uniq;
+		if(!isset($object['name'])) $object['name'] = 'check-'.$uniq;
 		if(!isset($object['class'])) $object['class'] = '';
 		if(!isset($object['value'])) $object['value'] = $value;
 		if(!isset($object['attrs'])) $object['attrs'] = [];
@@ -404,9 +468,9 @@ class AdminPage {
 
 	public static function datetimeField($object, $value=null){
 		$uniq=uniqid();
-		if(!isset($object['id'])) $object['id'] = 'time-'.$uniq;
+		if(!isset($object['id'])) $object['id'] = 'datetime-'.$uniq;
 		if(!isset($object['title'])) $object['title'] = '';
-		if(!isset($object['name'])) $object['name'] = 'time-'.$uniq;
+		if(!isset($object['name'])) $object['name'] = 'datetime-'.$uniq;
 		if(!isset($object['class'])) $object['class'] = '';
 		if(!isset($object['value'])) $object['value'] = $value;
 		if(!isset($object['attrs'])) $object['attrs'] = [];
@@ -426,6 +490,160 @@ class AdminPage {
 			});');
 		return $result.AdminPage::textField($object, $value);
 	}
+	
+	public static function selectField($object, $value=null){
+		$uniq=uniqid();
+		if(!isset($object['id'])) $object['id'] = 'select-'.$uniq;
+		if(!isset($object['title'])) $object['title'] = '';
+		if(!isset($object['name'])) $object['name'] = 'select-'.$uniq;
+		if(!isset($object['class'])) $object['class'] = '';
+		if(!isset($object['value'])) $object['value'] = $value;
+		if(!isset($object['attrs'])) $object['attrs'] = [];
+		if(!isset($object['items'])) $object['items'] = [];
+		if(!isset($object['null'])) $object['null'] = false;
+		$attrs = ''; foreach($object['attrs'] as $key=>$val){ $attrs .= $key.'="'.addslashes($val).'" '; }
+		$result = '';
+		$result.= AdminPage::prepareJs('InitChosen($("#'.$object['id'].'"));');
+		
+		$options = '';
+		if($object['null']) { $options .= '<option value="">Не выбрано</option>'; }
+		foreach($object['items'] as $item){
+			$value = (isset($item['value'])?$item['value']:null);
+			$label = (isset($item['label'])?$item['label']:null);
+			$i=0; $opt_attrs = '';
+			foreach($item as $key=>$val){
+				if(is_null($value) and $i==0){ $value=$val;}
+				if(is_null($label) and $i==1){ $label=$val;}
+				if($i>1){$opt_attrs.=' data-'.$key.'="'.addslashes($val).'"';}
+				$i++;
+			}
+			$options .= '<option value="'.$value.'" '.$opt_attrs.'>'.$label.'</option>';
+		}
+		return $result.'
+			<div class="sectright-filters-form-label">
+				<label><span class="title">'.$object['title'].':</span>
+					<select id="'.$object['id'].'" class="filter-input '.$object['class'].'" name="'.$object['name'].'" value="'.$object['value'].'" placeholder="'.$object['title'].'" '.$attrs.'>
+						'.$options.'
+					</select>
+				</label>
+			</div>
+		';
+	}
+	
+	public static function buttonField($object, $value=null){
+		$uniq=uniqid();
+		if(!isset($object['id'])) $object['id'] = 'button-'.$uniq;
+		if(!isset($object['title'])) $object['title'] = '';
+		if(!isset($object['name'])) $object['name'] = 'button-'.$uniq;
+		if(!isset($object['class'])) $object['class'] = '';
+		if(!isset($object['button-type'])) $object['button-type'] = 'default'; // default, primary, secondary, success, danger, warning, info, light, dark, link || outline-*
+		if(!isset($object['value'])) $object['value'] = $value;
+		if(!isset($object['attrs'])) $object['attrs'] = [];
+		if(!isset($object['onClick'])) $object['onClick'] = false;
+		$attrs = ''; foreach($object['attrs'] as $key=>$val){ $attrs .= $key.'="'.addslashes($val).'" '; }
+		$result = '';
+		if($object['onClick']){
+			$result.= AdminPage::prepareJs('$("#'.$object['id'].'").click(function(event){
+				'.$object['onClick'].'
+			});');
+		}
+		return $result.'
+			<button id="'.$object['id'].'" class="btn btn-'.$object['button-type'].' '.$object['class'].'" name="'.$object['name'].'" type="button" value="'.$object['value'].'" '.$attrs.'>'.$object['title'].'</button>
+		';
+	}
+	
+	public static function submitField($object, $value=null){
+		$uniq=uniqid();
+		if(!isset($object['id'])) $object['id'] = 'button-'.$uniq;
+		if(!isset($object['title'])) $object['title'] = '';
+		if(!isset($object['name'])) $object['name'] = 'button-'.$uniq;
+		if(!isset($object['class'])) $object['class'] = '';
+		if(!isset($object['button-type'])) $object['button-type'] = 'default'; // default, primary, secondary, success, danger, warning, info, light, dark, link || outline-*
+		if(!isset($object['value'])) $object['value'] = $value;
+		if(!isset($object['attrs'])) $object['attrs'] = [];
+		$attrs = ''; foreach($object['attrs'] as $key=>$val){ $attrs .= $key.'="'.addslashes($val).'" '; }
+		$result = '';
+		
+		return $result.'
+			<button id="'.$object['id'].'" class="btn btn-'.$object['button-type'].' '.$object['class'].'" name="'.$object['name'].'" type="submit" value="'.$object['value'].'" '.$attrs.'>'.$object['title'].'</button>
+		';
+	}
+	
+	public static function filesUploaderField($object){
+		$uniq=uniqid();
+		if(!isset($object['id'])) $object['id'] = 'button-'.$uniq;
+		if(!isset($object['title'])) $object['title'] = '';
+		if(!isset($object['url'])) $object['url'] = '';
+		if(!isset($object['class'])) $object['class'] = '';
+		if(!isset($object['attrs'])) $object['attrs'] = [];
+		$attrs = ''; foreach($object['attrs'] as $key=>$val){ $attrs .= $key.'="'.addslashes($val).'" '; }
+		$result = '';
+		$result.= AdminPage::prepareJs('
+    $("#'.$object['id'].'").plupload({
+        // General settings
+        runtimes : "html5,flash,silverlight,html4",
+        url : "'.$object['url'].'",
+		multipart_params: {
+			"ajax_action" : "action_upload"
+		},
+        // Maximum file size
+        max_file_size : "100mb",
+        chunk_size: "1mb",
+        // Specify what files to browse for
+        filters : [],
+        // Rename files by clicking on their titles
+        rename: true,
+		//unique_names: true,
+        sortable: true,  // Sort files
+        dragdrop: true, // Enable ability to drag\'n\'drop files onto the widget (currently only HTML5 supports that)
+        // Views to activate
+        views: {list: true,thumbs: true,active: "thumbs"},
+        flash_swf_url : "/admin/application/views/js/plupload/Moxie.swf", // Flash settings
+        silverlight_xap_url : "/admin/application/views/js/plupload/Moxie.xap", // Silverlight settings
+		uploaded: function(event, up){
+			console.log(up.file); 
+			var file = up.file;
+			console.log(up.result.response); 
+			var response = JSON.parse(up.result.response);
+			console.log(response); 
+			if(response.OK == 1){
+				$("#'.$object['id'].'-uploaded-files table tbody").append("<tr><td><b>" + response.name + "</b><div>Полный путь: <a href=\"" + response.url + "\" target=\"_blank\">" + response.url + "</a></div></td><td><b>" + file.size + "</b></td><td><b>" + file.type + "</b></td></tr>");
+			}
+			else{
+				$("#'.$object['id'].'-uploaded-files table tbody").append("<tr><td><b>" + response.name + "</b><div>ОШИБКА: <span>" + response.info + "</span></div></td><td><b>NaN</b></td><td><b>NaN</b></td></tr>");
+			}
+		},
+		
+		complete: function(uploader, files){
+			//console.log(arguments); 
+		}
+    });
+		
+		');
+		return $result.'
+		<div class="">
+			<span class="title">'.$object['title'].':</span>
+				<div id="'.$object['id'].'" class="'.$object['class'].'" '.$attrs.'>
+					<p>Your browser doesn\'t have Flash, Silverlight or HTML5 support.</p>
+				</div>
+				
+				<div id="'.$object['id'].'-uploaded-files">
+					<table class="main-table">
+					<thead>
+						<tr>
+							<td>Название файла</td>
+							<td style="width:200px;">Размер</td>
+							<td style="width:200px;">Тип</td>
+						</tr>
+					</thead>
+					<tbody></tbody>
+					</table>
+				</div>
+			
+		</div>
+		';
+	}
+	
 	
 	public function __toString(){
 		return $this->get();

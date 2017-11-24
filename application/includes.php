@@ -28,6 +28,22 @@ $GLOBALS['DB']['localhost'] = new SafeMySQL(array(
 									'db'      => $GLOBALS['CONFIG']['DB']['db'],
 									'charset' => $GLOBALS['CONFIG']['DB']['charset']
 								)) or die('База данных не доступна...');
+
+$GLOBALS['DB']['radio'] = new SafeMySQL(array(	
+									'host'    => 'localhost',
+									'user'    => 'gsp1_U0yLhS',
+									'pass'    => 'jtHBHeulv0BTGjDhRfSKtAtK0i6MzKh6',
+									'db'      => 'gsp1.feomedia.ru',
+									'charset' => 'utf8'
+								)) or die('База данных не доступна...');
+								
+$GLOBALS['DB']['80.93.183.242'] = new SafeMySQL(array(	
+									'host'    => '80.93.183.242',
+									'user'    => 'pubuser',
+									'pass'    => 'KaFa_07_pwd',
+									'db'      => 'main',
+									'charset' => 'utf8'
+								)) or die('База данных не доступна...');
 								
 ///////////////////////////////////////////////////////////////////////////////////////////
 include_once APPDIR .'/application/core/functions.php'; // основные функции приложения

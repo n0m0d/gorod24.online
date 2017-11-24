@@ -14,8 +14,11 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
 	<link rel="stylesheet" href="https://ajax.googleapis.com/ajax/libs/jqueryui/1.12.1/themes/cupertino/jquery-ui.css">
 	
+	<!--
 	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet">
 	<link href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap-theme.min.css" rel="stylesheet">
+	-->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 	
 	<script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
 	<script src="/admin/application/views/js/jquery.ui.datepicker-ru.js"></script>
@@ -39,6 +42,11 @@
 	<meta name="theme-color" content="#000">
 	<meta name="msapplication-navbutton-color" content="#000">
 	<meta name="apple-mobile-web-app-status-bar-style" content="#000">
+	
+	<link href="/admin/application/views/js/plupload/jquery.ui.plupload/css/jquery.ui.plupload.css" rel="stylesheet" type="text/css" media="all" />
+	<script type="text/javascript" src="/admin/application/views/js/plupload/plupload.full.min.js"></script>
+	<script type="text/javascript" src="/admin/application/views/js/plupload/jquery.ui.plupload/jquery.ui.plupload.min.js"></script>
+	<script type="text/javascript" src="/admin/application/views/js/plupload/i18n/ru.js"></script>
 	
 	<script src="/admin/application/views/js/common.js"></script>
 </head>
@@ -66,7 +74,7 @@
 	<header class="main-header">
 		<div class="head-block-1">
 			<div class="logo">
-				<img src="/application/views/gorod24/logo_gorod24.gif" height="30px" alt="полезное радио">
+				<img src="/application/views/feoradio/img/logo.png" height="30px" alt="полезное радио">
 				<!--
 				<div class="logo-left">город</div>
 				<div class="logo-right">
@@ -126,5 +134,9 @@
 				<a href="<?=$GLOBALS['CONFIG']['HTTP_HOST']?>/admin/settings/" class="sectleft-item ajax-load <?=($this->data['main-menu']['Настройки']?'active':'')?>">
 					<span class="sectleft-item-icon"><i class="fa fa-cog" aria-hidden="true"></i></span>
 					<p class="sectleft-item-text">Настройки</p>
+				</a>
+				<a href="<?=$GLOBALS['CONFIG']['HTTP_HOST']?>/admin/radio/" class="sectleft-item ajax-load <?=($this->data['main-menu']['Радио']?'active':'')?>">
+					<span class="sectleft-item-icon"><i class="fa fa-pinterest-p" aria-hidden="true"></i></span>
+					<p class="sectleft-item-text">Радио</p>
 				</a>
 			</div>

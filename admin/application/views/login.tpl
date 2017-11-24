@@ -70,7 +70,7 @@ form label {
 <div class="loginBlock">
 <form action="/admin/" method="POST">
 	<div>
-		<img src="/application/views/gorod24/logo_gorod24.gif" width="100%" alt="полезное радио">
+		<img src="/application/views/feoradio/img/logo.png" width="100%" alt="полезное радио">
 	</div>
 	<hr>
 	<h3>Авторизация</h3>

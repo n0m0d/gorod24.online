@@ -1,7 +1,7 @@
 <html>
 	<head>
-		<title>Город24: Всегда там где ты! </title>
-		<meta itemprop="description" content="Информациооная система: Город24.онлайн">
+		<title><?=$this->headers['title']?></title>
+		<meta itemprop="description" content="Информационная система: Город24.онлайн">
 		<style>
 			DIV.parent {
 				width: 100%;

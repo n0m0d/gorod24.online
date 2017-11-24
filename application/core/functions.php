@@ -11,7 +11,7 @@ $locale = "ru_RU";
 
 function checkTableExist($table_name = null){
 	if($table_name){
-		$result = $GLOBALS['DB']->getRow("SHOW TABLE STATUS WHERE NAME = '{$table_name}';");
+		$result = $GLOBALS['DB']['localhost']->getRow("SHOW TABLE STATUS WHERE NAME = '{$table_name}';");
 		if(!empty($result)) return $result; else return false;
 	}
 	else return false;
@@ -19,7 +19,7 @@ function checkTableExist($table_name = null){
 
 function checkTableColumns($table_name = null){
 	if($table_name){
-		$result = $GLOBALS['DB']->getAll("SHOW FULL COLUMNS FROM {$table_name};");
+		$result = $GLOBALS['DB']['localhost']->getAll("SHOW FULL COLUMNS FROM {$table_name};");
 		if(!empty($result)) return $result; else return false;
 	}
 	else return false;
@@ -27,7 +27,7 @@ function checkTableColumns($table_name = null){
 
 function checkTableIndexes($table_name = null){
 	if($table_name){
-		$result = $GLOBALS['DB']->getAll("SHOW INDEX FROM {$table_name};");
+		$result = $GLOBALS['DB']['localhost']->getAll("SHOW INDEX FROM {$table_name};");
 		if(!empty($result)) return $result; else return false;
 	}
 	else return false;
@@ -124,7 +124,44 @@ function rus2translit($string) {
 		);
 		return strtr($string, $converter);
 }
-
+// Радиус земли
+define('EARTH_RADIUS', 6372795);
+ 
+/*
+ * Расстояние между двумя точками
+ * $φA, $λA - широта, долгота 1-й точки,
+ * $φB, $λB - широта, долгота 2-й точки
+ * Написано по мотивам http://gis-lab.info/qa/great-circles.html
+ * Михаил Кобзарев <mikhail@kobzarev.com>
+ *
+ */
+function calculateTheDistance ($φA, $λA, $φB, $λB) {
+ 
+    // перевести координаты в радианы
+    $lat1 = $φA * M_PI / 180;
+    $lat2 = $φB * M_PI / 180;
+    $long1 = $λA * M_PI / 180;
+    $long2 = $λB * M_PI / 180;
+ 
+    // косинусы и синусы широт и разницы долгот
+    $cl1 = cos($lat1);
+    $cl2 = cos($lat2);
+    $sl1 = sin($lat1);
+    $sl2 = sin($lat2);
+    $delta = $long2 - $long1;
+    $cdelta = cos($delta);
+    $sdelta = sin($delta);
+ 
+    // вычисления длины большого круга
+    $y = sqrt(pow($cl2 * $sdelta, 2) + pow($cl1 * $sl2 - $sl1 * $cl2 * $cdelta, 2));
+    $x = $sl1 * $sl2 + $cl1 * $cl2 * $cdelta;
+ 
+    //
+    $ad = atan2($y, $x);
+    $dist = $ad * EARTH_RADIUS;
+ 
+    return $dist;
+}
 /**
  * Возвращает сумму прописью
  * @author runcore
@@ -227,6 +264,68 @@ function generatePassword($length=9, $strength=8) {
  }
  }
  return $password;
+}
+
+function genCode($len,$our_alphabet = false) {
+	$alphabet = array(
+		'1','2','3','4','5','6','7','8','9','0',
+		'Q','W','E','R','T','Y','U','I','O','P',
+		'A','S','D','F','G','H','J','K','L','Z',
+		'X','C','V','B','N','M'
+	);
+	if ($our_alphabet) $alphabet = $our_alphabet;
+	$out = '';
+	
+	for ($i=0;$i<$len;$i++) {
+		$out.=$alphabet[rand(0,count($alphabet)-1)];
+	}
+	return $out;
+}
+
+function check_phone($phone){
+	/* +38 (050) 693-75-72*/
+	$phone = str_replace('(','',$phone);
+	$phone = str_replace(')','',$phone);
+	$phone = str_replace(' ','',$phone);
+	$phone = str_replace('-','',$phone);
+	/* +380506937572 */
+	if (substr($phone,0,1)!='+') return false;
+	if (strlen($phone)!=13 and strlen($phone)!=12) return false;
+	for ($i=0;$i<strlen($phone);$i++) {
+		if ($i!=0) {
+			if (!is_numeric(substr($phone,$i,1))) return false;
+		}
+	}
+	/*
+		код страны
+		оператор
+		номер
+	*/
+	$code_contry = substr($phone,0,2);
+	if($code_contry=="+7"){
+		$code = substr($phone,0,2);
+		$oppe = substr($phone,2,3);
+		$numm = substr($phone,5);
+	
+	}else{
+		$code = substr($phone,0,3);
+		$oppe = substr($phone,3,3);
+		$numm = substr($phone,6);
+	}
+	
+	
+	return array(
+		'valid' => true,
+		'country' => $code,
+		'oper' => $oppe,
+		'number' => $numm,
+		'phone' => $phone
+	);
+}
+
+function SMS_GW_Send($sign,$number,$message) {
+	$message = iconv('utf-8', 'cp1251', $message);
+	file_get_contents('https://smsc.ru/sys/send.php?login=feoboss&psw=maximus1975&phones='.$number.'&mes=Feomedia: '.$message);
 }
 
 function detect_city($ip = null) {
@@ -703,7 +802,7 @@ function testIp($ip, $permitted='127.0.0.1'){
 	
 }
 
-function image_resize($source_path, $destination_path, $newwidth,$newheight = FALSE,  $quality = FALSE) {
+function image_resize($source_path, $destination_path, $newwidth,$newheight = FALSE,  $quality = 100) {
     ini_set("gd.jpeg_ignore_warning", 1); // иначе на некотоых jpeg-файлах не работает
     list($oldwidth, $oldheight, $type) = getimagesize($source_path);
 

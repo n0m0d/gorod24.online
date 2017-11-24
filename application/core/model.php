@@ -206,15 +206,16 @@ class Model
 	private $_sql_limit = null;
 	 
 	function __construct($config = null){
-        if ($GLOBALS['CONFIG']['DB']['_server']) {
-			if(is_object($GLOBALS['DB']['localhost'])){
-				$this->_server = $GLOBALS['CONFIG']['DB']['server'];
+        if (isset($config['server'])) {
+			$this->_server = $config['server'];
+			if(is_object($GLOBALS['DB'][$this->_server])){
 				$this->_db = $GLOBALS['DB'][$this->_server];
 			} else  die("Подключение к серверу {$this->_server} отсутствует");
         }
 		else {
 			if(is_object($GLOBALS['DB']['localhost'])){
-			$this->_db = $GLOBALS['DB']['localhost'];
+				$this->_server = 'localhost';
+				$this->_db = $GLOBALS['DB']['localhost'];
 			} else  die("Подключение к серверу localhost отсутствует");
 		}
         if ($GLOBALS['CONFIG']['DB']['table_prefix']) {
@@ -309,8 +310,6 @@ class Model
         if ($auto_init) {
             $this->initAll();
         }
-		
-		//var_dump($config); exit;
 	}
 	
     public function db() {
@@ -422,7 +421,7 @@ class Model
                             foreach ($revision['before_query'] as $k=>$query) {
                                 try {
                                     $query = str_replace('{DBPREFIX}',$this->_db_prefix,$query);
-                                    $this->_db->query($query);
+                                    $this->_db->fquery($query);
                                 } catch (Exception $e) {
                                     die('SQL Fail Migr:'.$query);
                                 }
@@ -435,7 +434,7 @@ class Model
                             foreach ($revision['del_index'] as $k=>$index) {
                                 $query = "ALTER TABLE `{$this->_ct_name}` DROP INDEX {$index};";
                                 try {
-                                    $this->_db->query($query);
+                                    $this->_db->fquery($query);
                                 } catch (Exception $e) {
                                     die('SQL Fail Migr:'.$query);
                                 }
@@ -445,7 +444,7 @@ class Model
                             foreach ($revision['del_uniq'] as $k=>$uniq) {
                                 $query = "ALTER TABLE `{$this->_ct_name}` DROP INDEX {$uniq};";
                                 try {
-                                    $this->_db->query($query);
+                                    $this->_db->fquery($query);
                                 } catch (Exception $e) {
                                     die('SQL Fail Migr:'.$query);
                                 }
@@ -455,7 +454,7 @@ class Model
                             foreach ($revision['del_fulltext'] as $k=>$fulltext) {
                                 $query = "ALTER TABLE `{$this->_ct_name}` DROP INDEX {$fulltext};";
                                 try {
-                                    $this->_db->query($query);
+                                    $this->_db->fquery($query);
                                 } catch (Exception $e) {
                                     die('SQL Fail Migr:'.$query);
                                 }
@@ -465,7 +464,7 @@ class Model
                             foreach ($revision['del_columns'] as $k=>$cell) {
                                 $query = "ALTER TABLE `{$this->_ct_name}` DROP `{$cell}`;";
                                 try {
-                                    $this->_db->query($query);
+                                    $this->_db->fquery($query);
                                 } catch (Exception $e) {
                                     die('SQL Fail Migr:'.$query);
                                 }
@@ -479,7 +478,7 @@ class Model
                                 if (isset($cell['type'])) $cell_type = $cell['type'];
                                 $query = "ALTER TABLE  `{$this->_ct_name}` CHANGE  `{$k}`  `{$cell_name}` {$cell_type};";
                                 try {
-                                    $this->_db->query($query);
+                                    $this->_db->fquery($query);
                                 } catch (Exception $e) {
                                     die('SQL Fail Migr:'.$query);
                                 }
@@ -492,7 +491,7 @@ class Model
                                 $query = "ALTER TABLE  `{$this->_ct_name}` ADD  `{$k}` {$cell_};";
                                 if ($debug) echo $query."\n";
                                 try {
-                                    $this->_db->query($query);
+                                    $this->_db->fquery($query);
                                 } catch (Exception $e) {
                                     die('SQL Fail Migr:'.$query);
                                 }
@@ -504,7 +503,7 @@ class Model
                                 $query = "ALTER TABLE `{$this->_ct_name}` ADD INDEX `{$k}` (".implode(',',$index).");";
                                 if ($debug) echo $query."\n";
                                 try {
-                                    $this->_db->query($query);
+                                    $this->_db->fquery($query);
                                 } catch (Exception $e) {
                                     die('SQL Fail Migr:'.$query);
                                 }
@@ -515,7 +514,7 @@ class Model
                                 $query = "ALTER TABLE `{$this->_ct_name}` ADD UNIQUE `{$k}` (".implode(',',$index).");";
                                 if ($debug) echo $query."\n";
                                 try {
-                                    $this->_db->query($query);
+                                    $this->_db->fquery($query);
                                 } catch (Exception $e) {
                                     die('SQL Fail Migr:'.$query);
                                 }
@@ -526,7 +525,7 @@ class Model
                                 $query = "ALTER TABLE `{$this->_ct_name}` ADD FULLTEXT `{$k}` (".implode(',',$fulltext).");";
                                 if ($debug) echo $query;
                                 try {
-                                    $this->_db->query($query);
+                                    $this->_db->fquery($query);
                                 } catch (Exception $e) {
                                     die('SQL Fail Migr:'.$query);
                                 }
@@ -535,7 +534,7 @@ class Model
                         if (isset($revision['engine'])) {
                             $query = "ALTER TABLE  `{$this->_ct_name}` ENGINE = {$revision['engine']};";
                             try {
-                                $this->_db->query($query);
+                                $this->_db->fquery($query);
                             } catch (Exception $e) {
                                 die('SQL Fail Migr:'.$query);
                             }
@@ -544,7 +543,7 @@ class Model
                             foreach ($revision['after_query'] as $k=>$query) {
                                 try {
                                     $query = str_replace('{DBPREFIX}',$this->_db_prefix,$query);
-                                    $this->_db->query($query);
+                                    $this->_db->fquery($query);
                                 } catch (Exception $e) {
                                     die('SQL Fail Migr:'.$query);
                                 }
@@ -555,7 +554,7 @@ class Model
                         }
                         $query = "ALTER TABLE  `{$this->_database}`.`{$this->_ct_name}` COMMENT =  'rev{{$revision['version']}}';";
 						try {
-                            $this->_db->query($query);
+                            $this->_db->fquery($query);
                         } catch (Exception $e) {
                             die('SQL Fail Migr:'.$query);
                         }
@@ -581,17 +580,17 @@ class Model
         $prms[] = " PRIMARY KEY (`{$this->_ct_primary_key}`) ";
         foreach ($this->_ct_indexes as $iName=>$cells) {
             $index_cells = array();
-            foreach ($cells as $k=>$cell) { $index_cells[] = "`{$cell}`"; }
+            foreach ($cells as $k=>$cell) { $index_cells[] = (is_array($cell))?"`{$cell[0]}` ({$cell[1]})":"`{$cell}`"; }
             $prms[] = " INDEX `{$iName}` ( ".implode(',',$index_cells)." ) ";
         }
         foreach ($this->_ct_uniques as $iName=>$cells) {
             $unique_cells = array();
-            foreach ($cells as $k=>$cell) { $unique_cells[] = "`{$cell}`"; }
+            foreach ($cells as $k=>$cell) { $unique_cells[] = (is_array($cell))?"`{$cell[0]}` ({$cell[1]})":"`{$cell}`"; }
             $prms[] = " UNIQUE INDEX `{$iName}` ( ".implode(",",$unique_cells)." ) ";
         }
         foreach ($this->_ct_fulltext as $iName=>$cells) {
             $fulltext_cells = array();
-            foreach ($cells as $k=>$cell) { $fulltext_cells[] = "`{$cell}`"; }
+            foreach ($cells as $k=>$cell) { $fulltext_cells[] = (is_array($cell))?"`{$cell[0]}` ({$cell[1]})":"`{$cell}`"; }
             $prms[] = " FULLTEXT INDEX `{$iName}` ( ".implode(",",$fulltext_cells)." ) ";
         }
         $query = "
@@ -601,17 +600,18 @@ class Model
 		$debug = $this->showDebugQuery($query);
 		if($debug) return true;
 		try {
-            $this->_db->query($query);
+            $this->_db->fquery($query);
         } catch (Exception $e) {
-            echo "sql fail:{$query}";
+				die('<p>query fail: <pre>'.$query.'</pre></p><p>'.$e->getMessage().'</p>');
             exit();
         }
         if (count($this->_ct_initdata)) {
             $query_inserts = array();
             $query_cells = array();
             foreach ($this->_ct_initdata as $K=>$data) {
-				$this->_db->query("INSERT IGNORE INTO `{$this->_database}`.`{$this->_ct_name}` SET ?u",$data);
-            }
+				$this->_db->query("INSERT INTO `{$this->_database}`.`{$this->_ct_name}` SET ?u ",$data);
+			}
+            
             $this->_ct_initdata = array();
         }
         if (!is_null($this->_ct_initFunc) and method_exists($this,$this->_ct_initFunc)) {
@@ -652,8 +652,17 @@ class Model
 			$this->_sql_from="`{$this->_database}`.`{$this->_ct_name}`";
 			$this->_sql = true;
 		}
+		elseif(is_object($table)) {
+			$this->_sql_from="`{$table->_database}`.`{$table->_ct_name}`";
+			$this->_sql = true;
+		}
 		elseif(is_array($table)) {
-			$this->_sql_from=implode(', ',$table);
+			$items = [];
+			foreach($table as $item){
+				if(is_object($item)) { $items[]="`{$item->_database}`.`{$item->_ct_name}`";}
+				else $items[]=$item;
+			}
+			$this->_sql_from=implode(', ',$items);
 			$this->_sql = true;
 		}
 		else {
@@ -748,7 +757,7 @@ class Model
 				}
 				$this->usetSql();
 			} catch (Exception $e) {
-				die('query fail: '.$sql);
+				die('<p>query fail: <pre>'.$sql.'</pre></p><p>'.$e->getMessage().'</p>');
 			}
 		}
 	}
@@ -811,11 +820,12 @@ class Model
     }
 	
 	// Берет первую строку из таблици удовлетворяющую условию
-    public function getItemWhere($where='1', $what='*') {
+    public function getItemWhere($where='1', $what='*', $order=null) {
 		if(is_int($where) AND isset($this->_ct_primary_key)){
 			$where = "`{$this->_ct_primary_key}` = {$where}";
 		}
-        $query = "SELECT {$what} FROM `{$this->_database}`.`{$this->_ct_name}` WHERE {$where} LIMIT 1;";
+		if (!is_null($order)) $query_order=" ORDER BY {$order} ";
+        $query = "SELECT {$what} FROM `{$this->_database}`.`{$this->_ct_name}` WHERE {$where} {$query_order} LIMIT 1;";
 		$debug = $this->showDebugQuery($query);
 		if($debug) return true;
         try {
@@ -825,7 +835,7 @@ class Model
 			$this->_sql_trys++;
 			if($this->_sql_trys<=2){
 				$this->initTable();
-				$this->getItemWhere($where, $what);
+				$this->getItemWhere($where, $what, $order);
 			}
 			else {
 				die('query fail: '.$query);
@@ -845,7 +855,10 @@ class Model
 	// Берет все строки из таблици удовлетворяющие условию
     public function getItemsWhere($where="1",$order=null,$offset=null,$limit=null,$what='*',$alias=null) {
 		$parse_where=$where;
-		if(is_array($where)){
+		if(is_null($where)){
+			$parse_where='1';
+		}
+		elseif(is_array($where)){
 			$parse_where=[];
 			foreach($where as $key=>$val){ $parse_where[] = "`{$key}`='{$val}'";} $parse_where = implode(' AND ', $parse_where);
 		}
@@ -1032,7 +1045,7 @@ class Model
 
 		try {
 			if($this->_register_table AND ($this->_register_query OR $this->_register_query_once OR $this->_auto_register)) { $register_id = $this->registerQuery('InsertUpdate', $values); $this->_register_query_once = false;}
-			$this->_db->query($query); $this->_sql_trys = 1;
+			$this->_db->fquery($query); $this->_sql_trys = 1;
 			if(isset($data[$this->_ct_primary_key])){
 				return $data[$this->_ct_primary_key];
 			}
@@ -1042,13 +1055,14 @@ class Model
 				return $insertId;
 			}
 		} catch (Exception $e) {
+			
 			$this->_sql_trys++;
 			if($this->_sql_trys<=2){
 				$this->initTable();
 				$this->InsertUpdate($data);
 			}
 			else {
-				die('query fail: '.$query);
+				die('<p>query fail: <pre>'.$query.'</pre></p><p>'.$e->getMessage().'</p>');
 			}
         }
     }
@@ -1072,7 +1086,7 @@ class Model
 		if($debug) return true;
 		try {
 			if($this->_register_table AND ($this->_register_query OR $this->_register_query_once OR $this->_auto_register)) { $register_id = $this->registerQuery('Insert', $values); $this->_register_query_once = false;}
-			$this->_db->query($query); $this->_sql_trys = 1;
+			$this->_db->fquery($query); $this->_sql_trys = 1;
 			if(isset($data[$this->_ct_primary_key])){
 				return $data[$this->_ct_primary_key];
 			}
@@ -1134,7 +1148,7 @@ class Model
         try {
 			$this->_sql_trys = 1;
 			if($this->_register_table AND ($this->_register_query OR $this->_register_query_once OR $this->_auto_register)) { $register_id = $this->registerQuery('Update', $values, $where); $this->_register_query_once = false;}
-			$this->_db->query($query);
+			$this->_db->fquery($query);
 			return true;
         } catch (Exception $e) {
 			if($this->_sql_trys<=2){
@@ -1155,7 +1169,7 @@ class Model
 			try {
 				$this->_sql_trys = 1;
 				if($this->_register_table AND ($this->_register_query OR $this->_register_query_once OR $this->_auto_register)) { $register_id = $this->registerQuery('Delete', null, "`{$this->_ct_primary_key}`={$id}"); $this->_register_query_once = false;}
-				return $this->_db->query($query);
+				return $this->_db->fquery($query);
 			} catch (Exception $e) {
 				if($this->_sql_trys<=2){
 					$this->initTable();
@@ -1178,7 +1192,7 @@ class Model
 			try {
 				$this->_sql_trys = 1;
 				if($this->_register_table AND ($this->_register_query OR $this->_register_query_once OR $this->_auto_register)) { $register_id = $this->registerQuery('Delete', null, $id); $this->_register_query_once = false;}
-				return $this->_db->query($query);
+				return $this->_db->fquery($query);
 			} catch (Exception $e) {
 				if($this->_sql_trys<=2){
 					$this->initTable();
