@@ -1,0 +1,1 @@
+<img src="<?=$GLOBALS['CONFIG']['HTTP_HOST']?>/application/views/gorod24_dev/img/404.png" style="margin:0 auto;display: block;">

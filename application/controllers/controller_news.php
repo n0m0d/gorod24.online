@@ -468,12 +468,12 @@ class controller_news extends Controller
 					return '
 						<div class="banner-wrap grid-item grid-item--width2" style="margin-top: 0;">
 							<a href="#">
-								<img class="img-responsive" src="'.$GLOBALS['CONFIG']['HTTP_HOST'].'/application/views/gorod24/img/banners/item-'.rand(0, 9).'.gif" alt="alt">
+								<img class="img-responsive" src="'.$GLOBALS['CONFIG']['HTTP_HOST'].'/application/views/gorod24_dev/img/banners/item-'.rand(0, 9).'.gif" alt="alt">
 							</a>
 						</div>
 						<div class="banner-wrap grid-item grid-item--width2" style="margin-top: 0;">
 							<a href="#">
-								<img class="img-responsive" src="'.$GLOBALS['CONFIG']['HTTP_HOST'].'/application/views/gorod24/img/banners/item-'.rand(0, 9).'.gif" alt="alt">
+								<img class="img-responsive" src="'.$GLOBALS['CONFIG']['HTTP_HOST'].'/application/views/gorod24_dev/img/banners/item-'.rand(0, 9).'.gif" alt="alt">
 							</a>
 						</div>
 					';
@@ -483,7 +483,7 @@ class controller_news extends Controller
 						<div class="vertical-banners grid-item">
 							<div class="banner-wrap" style="margin-top: 0;">
 								<a href="#">
-									<img class="img-responsive" src="'.$GLOBALS['CONFIG']['HTTP_HOST'].'/application/views/gorod24/img/banners/verticale-'.rand(1, 7).'.gif" alt="alt">
+									<img class="img-responsive" src="'.$GLOBALS['CONFIG']['HTTP_HOST'].'/application/views/gorod24_dev/img/banners/verticale-'.rand(1, 7).'.gif" alt="alt">
 								</a>
 							</div>
 						</div>

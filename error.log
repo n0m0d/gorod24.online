@@ -1612,3 +1612,10 @@ Stack trace:
 [Fatal error] [SHUTDOWN] date:2018-03-21 14:05:34 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
 [Fatal error] [SHUTDOWN] date:2018-03-21 14:05:39 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
 [Fatal error] [SHUTDOWN] date:2018-03-21 14:05:41 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
+[Fatal error] [SHUTDOWN] date:2018-03-21 15:00:46 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
+[Fatal error] [SHUTDOWN] date:2018-03-21 15:01:05 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
+[Fatal error] [SHUTDOWN] date:2018-03-21 15:02:04 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
+[Fatal error] [SHUTDOWN] date:2018-03-21 15:02:21 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
+[Fatal error] [SHUTDOWN] date:2018-03-21 15:02:23 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
+[Fatal error] [SHUTDOWN] date:2018-03-21 15:02:29 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
+[Fatal error] [SHUTDOWN] date:2018-03-21 15:02:30 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
