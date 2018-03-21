@@ -1619,3 +1619,94 @@ Stack trace:
 [Fatal error] [SHUTDOWN] date:2018-03-21 15:02:23 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
 [Fatal error] [SHUTDOWN] date:2018-03-21 15:02:29 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
 [Fatal error] [SHUTDOWN] date:2018-03-21 15:02:30 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
+[Fatal error] [SHUTDOWN] date:2018-03-21 15:27:11 lvl:1 | msg:Uncaught exception 'Exception' with message 'SafeMySQL: Table 'gorod24.online.gorod_news_look_day' doesn't exist. Full query: [
+			SELECT  
+					`nld_top`.`c`,
+					`nld_top`.`n_id`,
+					`nt`.*
+			FROM 
+					`gorod24.online`.`gorod_news` AS `nt`,
+					(
+							SELECT  
+									COUNT(`id`) AS `c`,
+									`nld`.*
+							FROM 
+									`gorod24.online`.`gorod_news_look_day` AS `nld` 
+							WHERE 
+									`nld`.`our`='1'
+							GROUP BY `n_id` 
+							ORDER BY `c` DESC 
+							LIMIT 5
+					) AS `nld_top`
+			WHERE
+					`nt`.`news_id`=`nld_top`.`n_id` AND `city_id`=1483 /*AND date_format(news_date, '%Y%m') = date_format(now(), '%Y%m')*/
+			ORDER BY `c` DESC
+		    LIMIT 3;
+		]' in E:\xampp\htdocs\gorod24\application\core\safemysql.class.php:627
+Stack trace:
+#0 E:\xampp\htdocs\gorod24\application\core\safemysql.class.php(487): SafeMySQL->error('Table 'gorod24....')
+#1 E:\xampp\htdocs\gorod24\application\core\safemysql.class.php(286): SafeMySQL->rawQuery('\r\n\t\t\tSELECT  \r\n...')
+#2 E:\ | file:E:\xampp\htdocs\gorod24\application\core\safemysql.class.php | ln:627
+[Fatal error] [SHUTDOWN] date:2018-03-21 15:27:16 lvl:1 | msg:Uncaught exception 'Exception' with message 'SafeMySQL: Table 'gorod24.online.gorod_news_look_day' doesn't exist. Full query: [
+			SELECT  
+					`nld_top`.`c`,
+					`nld_top`.`n_id`,
+					`nt`.*
+			FROM 
+					`gorod24.online`.`gorod_news` AS `nt`,
+					(
+							SELECT  
+									COUNT(`id`) AS `c`,
+									`nld`.*
+							FROM 
+									`gorod24.online`.`gorod_news_look_day` AS `nld` 
+							WHERE 
+									`nld`.`our`='1'
+							GROUP BY `n_id` 
+							ORDER BY `c` DESC 
+							LIMIT 5
+					) AS `nld_top`
+			WHERE
+					`nt`.`news_id`=`nld_top`.`n_id` AND `city_id`=1483 /*AND date_format(news_date, '%Y%m') = date_format(now(), '%Y%m')*/
+			ORDER BY `c` DESC
+		    LIMIT 3;
+		]' in E:\xampp\htdocs\gorod24\application\core\safemysql.class.php:627
+Stack trace:
+#0 E:\xampp\htdocs\gorod24\application\core\safemysql.class.php(487): SafeMySQL->error('Table 'gorod24....')
+#1 E:\xampp\htdocs\gorod24\application\core\safemysql.class.php(286): SafeMySQL->rawQuery('\r\n\t\t\tSELECT  \r\n...')
+#2 E:\ | file:E:\xampp\htdocs\gorod24\application\core\safemysql.class.php | ln:627
+[Fatal error] [SHUTDOWN] date:2018-03-21 15:28:01 lvl:1 | msg:Uncaught exception 'Exception' with message 'SafeMySQL: Unknown column 'city_id' in 'where clause'. Full query: [SELECT id, user_name, main_catid, caption as name, descr, price, up_time as date, json_photos, city, view_count, on_off FROM `new_feo_ua`.`adv_adventures` WHERE on_off = 2 AND city_id = 1483 AND main_catid != 13 ORDER BY up_time DESC LIMIT 6]' in E:\xampp\htdocs\gorod24\application\core\safemysql.class.php:627
+Stack trace:
+#0 E:\xampp\htdocs\gorod24\application\core\safemysql.class.php(487): SafeMySQL->error('Unknown column ...')
+#1 E:\xampp\htdocs\gorod24\application\core\safemysql.class.php(286): SafeMySQL->rawQuery('SELECT id, user...')
+#2 E:\xampp\htdocs\gorod24\application\controllers\controller_index.php(123): SafeMySQL->getAll('SELECT id, user...')
+#3 [internal function]: controller_index->action_index(Array)
+#4 E:\xampp\htdocs\gorod24\application\core\route.php(180): call_user_func_array(Array, Array)
+#5 E:\xampp\htdocs\gorod24\application\core\route.php(142): Route->runAction(Object(contro | file:E:\xampp\htdocs\gorod24\application\core\safemysql.class.php | ln:627
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:strpos(): Empty needle | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:61
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:strpos(): Empty needle | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:61
+[Fatal error] [SHUTDOWN] date:2018-03-21 15:30:45 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:strpos(): Empty needle | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:61
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:49
+[Warning] lvl: 2 | msg:strpos(): Empty needle | file:E:\xampp\htdocs\gorod24\application\plugins\menu.php | ln:61
+[Fatal error] [SHUTDOWN] date:2018-03-21 15:30:46 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
+[Fatal error] [SHUTDOWN] date:2018-03-21 15:30:55 lvl:1 | msg:Call to undefined function array_column() | file:E:\xampp\htdocs\gorod24\application\controllers\controller_news.php | ln:285
