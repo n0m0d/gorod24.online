@@ -1085,7 +1085,7 @@ class model_adventures extends Model
 			}
 		}
 		
-		$result = $this->getItemsWhere("`on_off`='1'".$wq, $order, $start, $limit, 'id, caption as name, price, city, json_photos, up_time as date, vip');
+		$result = $this->getItemsWhere("`on_off`='1'".$wq, $order, $start, $limit, 'id, caption as name, price, city, json_photos, up_time as date, vip, user_name, main_catid, sub_catid, descr');
 		
 		foreach($result as $i => $item){
 			$result[$i]['date'] = date("Y-m-d H:i:s", $result[$i]['date']);
