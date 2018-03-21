@@ -208,7 +208,10 @@
         <nav class="main-menu">
             <div class="container nps">
                 <ul class="menu hidden-xs">
-                    <?=do_shortcode('[menu url="'.$_SERVER['REQUEST_URI'].'" type="main"]');?>
+					<?php
+						$project = Registry::get('PROJECT');
+					?>
+                    <?=do_shortcode('[menu url="'.$_SERVER['REQUEST_URI'].'" project="'.$project['controller'].'" type="main"]');?>
                 </ul>
 
                 <div class="toggle-menu-wrap">
@@ -227,7 +230,7 @@
 
                 <div class="toggle-mobile-menu hidden-lg hidden-md hidden-sm">
                     <ul class="mobile-block-menu">
-                        <?=do_shortcode('[menu type="mobile"]');?>
+                        <?=do_shortcode('[menu project="'.$project['controller'].'" type="mobile"]');?>
                     </ul>
                 </div>
             </div>

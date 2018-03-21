@@ -3,6 +3,7 @@ class controller_ads extends Controller
 {
 	function __construct()
 	{
+		$project = Registry::get('PROJECT');
 		if (isBot() === false)
 		{
 			//$_COOKIE['city_id'] ? $this->view = new View('news.tpl') : $this->view = new View('select.tpl');

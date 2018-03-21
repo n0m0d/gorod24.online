@@ -23,7 +23,8 @@ if(!class_exists('menu', false))
 		{
 			extract(shortcode_atts(array(
 				'url' => '',
-				'type' => ''
+				'type' => '',
+				'project' => ''
 			), $atts));
 
 			$this->model_menu = new model_menu();
@@ -45,21 +46,22 @@ if(!class_exists('menu', false))
 
 				$sub_html = '';
 				$mob_sub_html = '';
-
+				
 				foreach ($sub_menu AS $s_menu)
 				{
+					$link = str_replace('%project_controller%', $project, $s_menu['link']);
 					$sub_html .= '
-						<li class="ajax-anchor-in '.$s_menu['class'].'"><a href="'.$GLOBALS['CONFIG']['HTTP_HOST'].'/'.$s_menu['link'].'">'.$s_menu['name'].'</a></li>
+						<li class="ajax-anchor-in '.$s_menu['class'].'"><a href="'.$GLOBALS['CONFIG']['HTTP_HOST'].'/'.$link.'">'.$s_menu['name'].'</a></li>
 					';
 
 					$mob_sub_html .= '
 						<li><a href="'.$GLOBALS['CONFIG']['HTTP_HOST'].'/'.$s_menu['link'].'">'.$s_menu['name'].'</a><em><i></i></em></li>
 					';
 				}
-
+				$link = str_replace('%project_controller%', $project, $menu['link']);
 				$menu_html .= '
-					<li class="ajax-anchor '.$menu['class'].' '.(strpos(Registry::get('REQUEST_URI'), $menu['link'])?"active":"").'">
-	                    <a href="'.$GLOBALS['CONFIG']['HTTP_HOST'].'/'.$menu['link'].'">'.$menu['name'].'</a>
+					<li class="ajax-anchor '.$menu['class'].' '.(strpos(Registry::get('REQUEST_URI'), $link)?"active":"").'">
+	                    <a href="'.$GLOBALS['CONFIG']['HTTP_HOST'].'/'.$link.'">'.$menu['name'].'</a>
 	                    <ul class="menu-sub-list">
 	                        '.$sub_html.'
 						</ul>
@@ -68,9 +70,10 @@ if(!class_exists('menu', false))
 
 				if ($mob_sub_html)
 				{
+					
 					$mob_menu_html .= '
 						<li class="has-drop-mobile">
-		                    <a href="'.$GLOBALS['CONFIG']['HTTP_HOST'].'/'.$menu['link'].'">'.$menu['name'].'</a>
+		                    <a href="'.$GLOBALS['CONFIG']['HTTP_HOST'].'/'.$link.'">'.$menu['name'].'</a>
 		                    <ul>
 		                        '.$mob_sub_html.'
 		                    </ul>
@@ -81,7 +84,7 @@ if(!class_exists('menu', false))
 				{
 					$mob_menu_html .= '
 						<li>
-		                    <a href="'.$GLOBALS['CONFIG']['HTTP_HOST'].'/'.$menu['link'].'">'.$menu['name'].'</a>
+		                    <a href="'.$GLOBALS['CONFIG']['HTTP_HOST'].'/'.$link.'">'.$menu['name'].'</a>
 		                </li>
 					';
 				}

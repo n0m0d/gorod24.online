@@ -51,6 +51,14 @@ class Route
 			else { $actions[]=$route;}
 		}
 		
+		if(count($routes)>0){
+			$model_projects = new model_projects();
+			$project = $model_projects->getItemWhere("`controller`='{$routes[0]}'");
+			if($project){
+				$project_controller = array_shift($routes);
+				Registry::set('PROJECT', $project);
+			}
+		}
 		if(self::checkControllerFolder(APPDIR."/application/controllers", $routes)){
 			//Поиск контроллера начиная с корнеаого каталога, если контроллер ненайден, то вернет false и продолжит выполнение скрипта.
 		}

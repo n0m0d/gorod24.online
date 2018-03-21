@@ -13,12 +13,11 @@ Author URI:
 //http://crimea-map.msk.ru/
 if(!class_exists('GisPars', false)){
 class GisPars {
-    var $town_index    =  33976;
-    var $xml_url       =  'https://xml.meteoservice.ru/export/gismeteo/point/xxxxx.xml';
-    var $xml_dir       =  APPDIR.'/';
-    var $times         =  array('2.40', '8.40', '14.40', '20.40');
-    var $debug         =  false;
-	var $data = null;
+    private $town_index    =  33976;
+    private $xml_url       =  'https://xml.meteoservice.ru/export/gismeteo/point/xxxxx.xml', $xml_dir;
+    private $times         =  array('2.40', '8.40', '14.40', '20.40');
+    private $debug         =  false;
+	private $data = null;
     
     private $i         =  0;
     private $res       =  array();
