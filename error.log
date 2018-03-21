@@ -1606,3 +1606,9 @@ Stack trace:
  | file:/var/www/gorod24.online/www/application/controllers/controller_thrumbs.php | ln:113
 [Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:/var/www/gorod24.online/www/application/models/model_adventures.php | ln:1244
 [Warning] lvl: 2 | msg:Invalid argument supplied for foreach() | file:/var/www/gorod24.online/www/application/models/model_adventures.php | ln:1244
+[Fatal error] [SHUTDOWN] date:2018-03-21 14:05:21 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
+[Fatal error] [SHUTDOWN] date:2018-03-21 14:05:22 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
+[Fatal error] [SHUTDOWN] date:2018-03-21 14:05:32 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
+[Fatal error] [SHUTDOWN] date:2018-03-21 14:05:34 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
+[Fatal error] [SHUTDOWN] date:2018-03-21 14:05:39 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18
+[Fatal error] [SHUTDOWN] date:2018-03-21 14:05:41 lvl:4 | msg:syntax error, unexpected '.', expecting ',' or ';' | file:E:\xampp\htdocs\gorod24\application\core\error.php(124) : eval()'d code | ln:18

@@ -97,6 +97,7 @@ class model_gorod_news extends Model
 				'watermark' => "VARCHAR(255) NULL DEFAULT NULL",
 				'watermark_big' => "VARCHAR(50) NULL DEFAULT NULL",
 				'18plus' => "INT(11) NOT NULL DEFAULT 0",
+				'gazeta_text' => "TEXT NULL DEFAULT NULL",
 				),
 			"index" => array(
 			),

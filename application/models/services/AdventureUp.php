@@ -25,7 +25,7 @@ class Payment_Services_AdventureUp extends Payment_Service {
 			$Payment_ServicesPackagesModel = $model_payment->packages();
 			$package = $Payment_ServicesPackagesModel->getItemWhere("`id`=$package_id");
 
-			$auto_up = $Adv_AutoUpModel->getItemWhere("`adv_id`='{$adv['id']}'");
+			$auto_up = $adv_model->autoup()->getItemWhere("`adv_id`='{$adv['id']}'");
 			if(empty($auto_up)){			
 				$adv_model->setRules($adv['id'] /* Id объявления */, date('Y-m-d') /* Дата старта поднятия */, (int)$package['period_int'] /* Количество дней */, $amount /* Автоматических поднятия на срок */, 1 /* Включено/выключено */);
 			}

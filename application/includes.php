@@ -28,7 +28,7 @@ $GLOBALS['DB']['localhost'] = new SafeMySQL(array(
 									'db'      => $GLOBALS['CONFIG']['DB']['db'],
 									'charset' => $GLOBALS['CONFIG']['DB']['charset']
 								)) or die('База данных не доступна...');
-
+/*
 $GLOBALS['DB']['radio'] = new SafeMySQL(array(	
 									'host'    => 'localhost',
 									'user'    => 'feofm_a0Qy8Y',
@@ -36,9 +36,9 @@ $GLOBALS['DB']['radio'] = new SafeMySQL(array(
 									'db'      => 'feo.fm',
 									'charset' => 'utf8'
 								)) or die('База данных не доступна...');
-								
+*/								
 $GLOBALS['DB']['80.93.183.242'] = new SafeMySQL(array(	
-									'host'    => '80.93.183.242',
+									'host'    => 'localhost',
 									'user'    => 'pubuser',
 									'pass'    => 'KaFa_07_pwd',
 									'db'      => 'main',
