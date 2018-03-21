@@ -1,13 +1,15 @@
 <?php
-class Controller_404 extends Controller
+class controller_pa extends Controller
 {
-	function action_index($array = array()){
-
+	function __construct()
+	{
 		if (isBot() === false)
 		{
+			//$_COOKIE['city_id'] ? $this->view = new View('news.tpl') : $this->view = new View('select.tpl');
+
 			if ($_COOKIE['city_id'])
 			{
-				$this->view = new View('404.tpl');
+				$this->view = new View('personal-account.tpl');
 			}
 			else
 			{
@@ -21,11 +23,12 @@ class Controller_404 extends Controller
 		}
 		else
 		{
-			$this->view = new View('404.tpl');
+			$this->view = new View('personal-account.tpl');
 			$this->city_id = 1483;
 		}
 
-		$this->view->headers['title'] = 'Страница не найдена | Город 24';
+		$this->view->headers['title'] = 'Личный кабинет | Город 24';
+		$this->view->data['menu']['persons'] = 'active';
 		$this->view->data['city_name'] = $_COOKIE['city_name'] ? $_COOKIE['city_name'] : getUserCity('name');
 
 		if ($_SESSION['user']['id'])
@@ -54,27 +57,10 @@ class Controller_404 extends Controller
 		$this->view->data['projects'] = $this->model_projects->getItemsWhere("1", "id DESC");
 		//Товары
 		$this->view->merchandise = new controller_merchandise();
-		//Комментарии
-		$this->view->comments = new controller_comments();
-		
 	}
+	
+	public function action_index($array = array())
+	{
 
-	/* API method nb.getIntermediateResults
-  * Промежуточные результаты. Возвращает список номинаций с брендами набравшие большее количество голосов в указанную неделю
-  * https://gorod24.online/api/nb.getIntermediateResults/<!city_id!>/<!contest_id!>/<!week!>?publickey=<!YOUR_PUBLIC_KEY!>&access_token=<!access_token!>
-  */
-	function action_nb_getIntermediateResults($params = array()){
-		self::log('nb.getIntermediateResults', $params);
-		$city_id = (int)addslashes(urldecode($params[0]));
-		$contest_id = (int)addslashes(urldecode($params[1]));
-		$week = (int)addslashes(urldecode($params[2]));
-		if(
-			empty($city_id)
-			or empty($contest_id)
-			or empty($week)
-		) die('{"error":1, "message":"The request failed"}');
-		$result = $this->_model_nb->getIntermediateResults($contest_id, $week);
-		echo self::getResponse($result);
 	}
-
 }
