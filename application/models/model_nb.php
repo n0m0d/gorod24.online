@@ -3,6 +3,7 @@ class model_nb extends Model
 {
 	protected $monthes;
 	protected $results; public function results(){ return $this->results; }
+	protected $cities; public function cities(){ return $this->cities; }
 	
 	function __construct($config = array()) {
 		$config = [
@@ -82,6 +83,40 @@ class model_nb extends Model
 		];
 		$this->results = new Model($results_config);
 		
+		$cities_config = [
+            "server" => "80.93.183.242",
+            "database" => "nb",
+            "prefix" => "",
+            "name" => "mvc_cities",
+            "engine" => "MyISAM",
+            "version" => "1",
+            "collation" => "utf8_general_ci",
+            "primary_key" => "city_id",
+			"autoinit"  => false,
+            "columns" => array(
+				'country' => "INT(11) NOT NULL DEFAULT '0'",
+				'region' => "INT(11) NOT NULL DEFAULT '0'",
+				'city_title' => "VARCHAR(50) NOT NULL DEFAULT ''",
+				'city_area' => "VARCHAR(50) NULL DEFAULT NULL",
+				'city_region' => "VARCHAR(50) NULL DEFAULT NULL",
+				'url' => "VARCHAR(100) NULL DEFAULT NULL",
+				'on_off' => "INT(11) NOT NULL DEFAULT 0",
+				'zagl' => "VARCHAR(255) NOT NULL DEFAULT ''",
+				),
+			"index" => array(
+			),
+			"unique" => array(
+			),
+			"fulltext" => array(
+			),
+			"revisions" => array(
+				array(
+					"version"       => "1",
+				),
+			)
+		];
+		$this->cities = new Model($cities_config);
+		
 		
 		
 		$this->monthes=array(
@@ -92,8 +127,92 @@ class model_nb extends Model
 		
 	}
 	
-	public function getCurrentContest($city_id, $user){
+	public function getCurrentContest($city_id, $user=null){
 		$result = $this->getItemWhere("`con_status`='1' AND con_city={$city_id}  AND con_start_date<=CURDATE() AND CURDATE()<=con_end_date", "con_id as id, con_name as name, con_descr as description, con_table_prefix, con_table_sufix", "con_id");
+		if(!empty($result)){
+		if($user){
+		$phone = $user['phones'][0]; $phone = preg_replace('~[^0-9]+~','',$phone); 
+		$email = $user['emails'][0];
+		$fields = "id_user as id, name, surname, second_name, sex, age, address, phone, email, valid, id_brend_random";
+		if(!empty($user)) $anket = $this->db()->getRow("SELECT {$fields} FROM thebest.{$result['con_table_prefix']}user{$result['con_table_sufix']} WHERE `feo_uid`=?i", $user['id']);
+		if(!empty($phone) and empty($anket)) 	$anket = $this->db()->getRow("SELECT {$fields} FROM thebest.{$result['con_table_prefix']}user{$result['con_table_sufix']} WHERE `phone`=?s", $phone);
+		if(!empty($email) and empty($anket)) $anket = $this->db()->getRow("SELECT {$fields} FROM thebest.{$result['con_table_prefix']}user{$result['con_table_sufix']} WHERE `email`=?s", $email);
+		$result['anketa'] = $anket;
+		
+		if(empty($anket)){
+			$otherContests = $this->getItemsWhere("`con_status`='1' AND con_city!={$city_id}  AND con_start_date<=CURDATE() AND CURDATE()<=con_end_date", "con_id", null, null, "con_id as id, con_name as name, con_descr as description, con_table_prefix, con_table_sufix");
+			
+			foreach($otherContests as $contest){
+				$other_anket = $this->db()->getRow("SELECT * FROM thebest.{$contest['con_table_prefix']}user{$contest['con_table_sufix']} WHERE `feo_uid`=?i", $user['id']);
+				if(!empty($other_anket)){
+					unset($other_anket['id_user']);
+					$other_anket['feo_uid'] = $user['id'];
+					$other_anket['ip_address'] = getIp();
+					$other_anket['valid']=0;
+					$other_anket['ulica']=0;
+					$other_anket['id_brend_random']=0;
+					$other_anket['motivation']=0;
+					$other_anket['created']=date("Y-m-d H:i:s");
+					$other_anket['confirmation_email']=0;
+					$other_anket['email_moder']=0;
+					$other_anket['priz']=0;
+					$other_anket['zapol']=0;
+					$other_anket['id_f_gest']=0;
+					$other_anket['confirm_from_sms']=null;
+					$other_anket['send_emails']=0;
+					$other_anket['inviter']=null;
+					$other_anket['money_add']=null;
+					$this->db()->query("INSERT INTO thebest.{$result['con_table_prefix']}user{$result['con_table_sufix']} SET ?u", $other_anket);
+					$anket_id = $this->db()->insertId();
+					$other_anket = $this->db()->getRow("SELECT {$fields} FROM thebest.{$result['con_table_prefix']}user{$result['con_table_sufix']} WHERE `id_user`=?i", $anket_id);
+					$anket = $other_anket;
+					$result['anketa'] = $other_anket;
+					break;
+				}
+			}
+			
+			
+		}
+		
+		
+		
+		if(!empty($anket)){
+			if($anket['valid']==1){
+				$result['anketa']['currentstep'] = "succes";
+			}
+			elseif(!empty($anket['id_brend_random'])){
+				$result['anketa']['currentstep'] = "step-3";
+			}
+			else {
+				$result['anketa']['currentstep'] = "step-2"; 
+			}
+		}
+		unset($result['con_table_prefix']);
+		unset($result['con_table_sufix']);
+		}
+		}
+		else {
+			$zaglushka = $this->cities->getItem($city_id);		
+			$result = ['id'=>0, "name"=>"", "description"=>"", "anketa"=>null, "image"=>$zaglushka['zagl']];
+		}
+		return $result;
+	}
+	
+	public function getPredInContest($contest_id, $pred_id){
+		$contest = $this->getItemWhere("`con_id`='{$contest_id}'", "con_id as id, con_name as name, con_descr as description, con_table_prefix, con_table_sufix", "con_id");
+		if(!empty($contest)){
+			$nom_id = $this->db()->GetOne("select id_n_brend from `thebest`.`{$contest['con_table_prefix']}brend_nomination{$contest['con_table_sufix']}` where `id_212`='{$pred_id}' ORDER BY `id_n_brend` ASC LIMIT 1");
+			if($nom_id){
+				return $nom_id;
+			}
+			else return false;
+		}
+		return false;
+	}
+	
+	public function getAnketaContest($contest_id, $user){
+		$result = $this->getItemWhere("`con_id`='{$contest_id}'", "con_id as id, con_name as name, con_descr as description, con_table_prefix, con_table_sufix", "con_id");
+		if(!empty($result)){
 		$phone = $user['phones'][0]; $phone = preg_replace('~[^0-9]+~','',$phone); 
 		$email = $user['emails'][0];
 		$fields = "id_user as id, name, surname, second_name, sex, age, address, phone, email, valid, id_brend_random";
@@ -114,11 +233,32 @@ class model_nb extends Model
 		}
 		unset($result['con_table_prefix']);
 		unset($result['con_table_sufix']);
+		}
+		else {
+			$zaglushka = $this->cities->getItem($city_id);		
+			$result = ['id'=>0, "name"=>"", "description"=>"", "anketa"=>null, "image"=>$zaglushka['zagl']];
+		}
+		return $result;
+	}
+	
+	public function getAnketaPercent($contest_id, $anketa_id){
+		$contest = $this->getItemWhere("`con_id`='{$contest_id}'", "con_id as id, con_name as name, con_descr as description, con_table_prefix, con_table_sufix", "con_id");
+		if(!empty($contest)){
+			if(!empty($user)) $anket = $this->db()->getRow("SELECT {$fields} FROM thebest.{$contest['con_table_prefix']}user{$contest['con_table_sufix']} WHERE `feo_uid`=?s", $user['id']);
+			$nominations = $this->db()->getOne("SELECT COUNT(*) FROM thebest.{$contest['con_table_prefix']}nomination{$contest['con_table_sufix']} WHERE 1");
+			$votes = $this->db()->getOne("SELECT COUNT(*) FROM thebest.{$contest['con_table_prefix']}votes{$contest['con_table_sufix']} WHERE `id_user`=?i", $anketa_id);
+			$result = ( 100 / $nominations) * $votes;
+		}
+		else {
+			$zaglushka = $this->cities->getItem($city_id);		
+			$result = 0;
+		}
 		return $result;
 	}
 	
 	public function getAnketa($contest, $id){
-		$anket = $this->db()->getRow("SELECT {$fields} FROM thebest.{$contest['con_table_prefix']}user{$contest['con_table_sufix']} WHERE `id_user`=?i", $id);
+		$fields = "id_user as id, name, surname, second_name, sex, age, address, phone, email, valid, id_brend_random";
+		$anket = $this->db()->getRow("SELECT {$fields} FROM thebest.{$contest['con_table_prefix']}user{$contest['con_table_sufix']} WHERE `feo_uid`=?i", $id);
 		return $anket;
 	}
 	
@@ -180,11 +320,11 @@ class model_nb extends Model
 		$id_brend = $this->db()->GetOne("SELECT `id_brend` FROM `thebest`.`{$contest['con_table_prefix']}brend{$contest['con_table_sufix']}` WHERE `name` = ?s", $brend);
 		if(empty($id_brend)){
 			$this->db()->query("insert into `thebest`.`{$contest['con_table_prefix']}brend{$contest['con_table_sufix']}` (`name`, `date_ins`) values (?s, CURDATE())", $brend); 
-			$id_brend = $this->model->db->insertId();
+			$id_brend = $this->db()->insertId();
 		}
 		$this->db()->query("UPDATE `thebest`.`{$contest['con_table_prefix']}user{$contest['con_table_sufix']}` SET `id_brend_random`=?i WHERE `id_user`=?i", $id_brend, $anketa_id);
 		
-		return ["success"=>1, "message"=>"Successfully set step 2", "brend_id"=>$id_brend];
+		return ["success"=>1, "message"=>"Успешно", "brend_id"=>$id_brend];
 	}
 	
 	public function getNominations($contest_id, $anketa_id=null){
@@ -194,9 +334,14 @@ class model_nb extends Model
 			$succes = 1;
 		}
 		foreach($nominations as $i=>$nomination){
-			$nominations[$i]['items'] = $this->db()->GetAll("select id_n_brend as id, nomination_brend as name from `thebest`.`{$contest['con_table_prefix']}brend_nomination{$contest['con_table_sufix']}` where `id_nomination`='{$nomination['id']}' ORDER BY `nomination_brend` ASC");
+			$not_use = [[ "id" => "0", "name" => "Не пользуюсь"]];
+			$items = $this->db()->GetAll("select id_n_brend as id, nomination_brend as name from `thebest`.`{$contest['con_table_prefix']}brend_nomination{$contest['con_table_sufix']}` where `id_nomination`='{$nomination['id']}' ORDER BY `nomination_brend` ASC");
+			$items = array_merge($not_use, $items);
+			$nominations[$i]['items'] = $items;
 			if(!is_null($anketa_id)){
+				$selected = $this->db()->GetOne("select id_n_brend FROM `thebest`.`{$contest['con_table_prefix']}votes{$contest['con_table_sufix']}` where `id_nomination`='{$nomination['id']}' and `id_user`=?i", $anketa_id);
 				$nominations[$i]['result'] = $this->db()->GetOne("select COUNT(*) FROM `thebest`.`{$contest['con_table_prefix']}votes{$contest['con_table_sufix']}` where `id_nomination`='{$nomination['id']}' and `id_user`=?i", $anketa_id);
+				$nominations[$i]['selected'] = (int)$selected;
 				if($nominations[$i]['result']==0) $succes = 0;
 			}
 		}
@@ -223,7 +368,37 @@ class model_nb extends Model
 			$this->db()->query("UPDATE `thebest`.`{$contest['con_table_prefix']}user{$contest['con_table_sufix']}` SET `valid`=1 WHERE `id_user`=?i", $anketa_id);
 		}
 		
-		return ["success"=>1, "message"=>"Successfully"];
+		return ["success"=>1, "message"=>"Успешно"];
+	}
+	
+	public function getFirmNominations($contest_id, $brend_id, $user_id){
+		$contest = $this->getItem($contest_id);
+		$anketa = $this->getAnketa($contest, $user_id);
+		$anketa_id = $anketa['id'];
+		if(empty($anketa_id)){
+			return false;
+		}
+		
+		$nominations = $this->db()->GetAll("
+			select 
+				id_n_brend as id, 
+				({$contest_id}) as contest_id, 
+				({$anketa_id}) as anketa_id, 
+				nomination_brend as name, 
+				id_nomination as nomination_id, 
+				(select `nomination` FROM `thebest`.`{$contest['con_table_prefix']}nomination{$contest['con_table_sufix']}` as `nomination` WHERE `nomination`.`id_nomination` = `brend_nomination`.`id_nomination`) as `nomination_name` ,
+				(select `id_n_brend` FROM `thebest`.`{$contest['con_table_prefix']}votes{$contest['con_table_sufix']}` as `votes` WHERE `votes`.`id_nomination` = `brend_nomination`.`id_nomination` and `votes`.`id_user`='{$anketa_id}') as `selected`,
+				(select `nomination_brend` FROM `thebest`.`{$contest['con_table_prefix']}brend_nomination{$contest['con_table_sufix']}` as `t2` WHERE `t2`.`id_n_brend` = (select `id_n_brend` FROM `thebest`.`{$contest['con_table_prefix']}votes{$contest['con_table_sufix']}` as `votes` WHERE `votes`.`id_nomination` = `brend_nomination`.`id_nomination` and `votes`.`id_user`='{$anketa_id}')) as `selected_name` 
+			FROM 
+				`thebest`.`{$contest['con_table_prefix']}brend_nomination{$contest['con_table_sufix']}` as `brend_nomination`
+			WHERE 
+				`id_n_brend`='{$brend_id}'");
+		foreach($nominations as $i=>$nomination){
+			if($nomination['selected']=='0'){
+				$nominations[$i]['selected'] = null;
+			}
+		}
+		return $nominations;
 	}
 	
 	public function setCustomNomination($contest_id, $anketa_id, $nomination_id, $brend){
@@ -250,42 +425,92 @@ class model_nb extends Model
 			$this->db()->query("UPDATE `thebest`.`{$contest['con_table_prefix']}user{$contest['con_table_sufix']}` SET `valid`=1 WHERE `id_user`=?i", $anketa_id);
 		}
 		
-		return ["success"=>1, "message"=>"Successfully"];
+		return ["success"=>1, "message"=>"Successfully", "brend_id" => $brend_id];
 	}
 	
 	public function getWeeksIntermediateResults($contest_id){
 		$contest = $this->getItem($contest_id);
         $today = date('Y-m-d h:i:s');
-		$result = $this->get_week_list($today, (date("W", strtotime($contest['con_start_date']))));
+		//$result = $this->get_week_list($today, (date("W", strtotime($contest['con_start_date']))-1));
+		$result = $this->get_month_list($today, $contest['con_start_date'], $contest['con_end_date']);
 		return $result; 
 	}
 	
 	public function getIntermediateResults($contest_id, $week){
 		$contest = $this->getItem($contest_id);
         $year = date("Y", strtotime($contest['con_start_date']));
+		$start = (int)date("m", strtotime($contest_start));
+		$end = (int)date("m", strtotime($date));
+		
 		$date_array = $this->get_monday($week, $year);
-		$ds = date("Y-m-d 00:00:00", $date_array['0']);
-		$de = date("Y-m-d 23:59:59", $date_array['6']);
+		for($i=$start;$i<=$end;$i++){
+			if($i==$week){
+			if($i == $start){ $day_ds = date("d", strtotime($contest_start)); $day_de = date("t", strtotime($contest_start));}
+			elseif($i == $end) {
+				$day_ds = "01";
+				$day_de = date("d", time());
+			}
+			else {
+				$day_ds = "01";
+				$day_de = date("t", strtotime(date("{$year}-{$i}-01")));
+			}
+			
+			$date_start = "{$year}-{$i}-{$day_ds}";
+			$date_end = "{$year}-{$i}-{$day_de}";
+			}
+		}
+		
+		$ds = date("Y-m-d 00:00:00", strtotime($date_start));
+		$de = date("Y-m-d 23:59:59", strtotime($date_end));
 		$nominations = $this->db()->GetAll("SELECT id_nomination as id, nomination as name FROM `thebest`.`{$contest['con_table_prefix']}nomination{$contest['con_table_sufix']}`");
 		foreach($nominations as $i=>$nomination){
 			
 			$nominations[$i]['items'] = $this->db()->GetAll("
 				SELECT id_n_brend as id, nomination_brend as name,  
-				(SELECT COUNT(*) FROM `thebest`.`{$contest['con_table_prefix']}votes{$contest['con_table_sufix']}` as v WHERE v.id_nomination=b.id_nomination AND v.id_n_brend=b.id_n_brend AND (v.vote_date BETWEEN STR_TO_DATE('{$ds}', '%Y-%m-%d %H:%i:%s') AND STR_TO_DATE('{$de}', '%Y-%m-%d %H:%i:%s'))) as votes  
+				0 as votes
+				/*(SELECT COUNT(*) FROM `thebest`.`{$contest['con_table_prefix']}votes{$contest['con_table_sufix']}` as v WHERE v.id_nomination=b.id_nomination AND v.id_n_brend=b.id_n_brend AND (v.vote_date BETWEEN STR_TO_DATE('{$ds}', '%Y-%m-%d %H:%i:%s') AND STR_TO_DATE('{$de}', '%Y-%m-%d %H:%i:%s'))) as votes  */
 				FROM `thebest`.`{$contest['con_table_prefix']}brend_nomination{$contest['con_table_sufix']}`as b WHERE `id_nomination`=?i ORDER BY `votes` DESC LIMIT 3
 				", $nomination['id']);
+				shuffle($nominations[$i]['items']);
 		}
 		return $nominations; 
 	}
 	
 	function get_monday($weekNumber, $year){
-		$time = strtotime($year . '0104 +' . ($weekNumber - 1). ' weeks');
+		$time = strtotime($year . '-01-01 +' . ($weekNumber ). ' weeks');
 		$mondayTime = strtotime('0 days', $time);
 		$dayTimes = array ();
 		for ($i = 0; $i < 7; ++$i) {
 			$dayTimes[] = strtotime('+' . $i . ' days', $mondayTime);
 		}
 		return $dayTimes;
+	}
+	
+	function get_month_list($date, $contest_start, $contest_end) {
+		$year = (int)date("Y", strtotime($contest_start));
+		$start = (int)date("m", strtotime($contest_start));
+		$end = (int)date("m", strtotime($date));
+		
+		$result = [];
+		
+		for($i=$start;$i<=$end;$i++){
+			if($i == $start){ $day_ds = date("d", strtotime($contest_start)); $day_de = date("t", strtotime($contest_start));}
+			elseif($i == $end) {
+				$day_ds = "01";
+				$day_de = date("d", time());
+			}
+			else {
+				$day_ds = "01";
+				$day_de = date("t", strtotime(date("{$year}-{$i}-01")));
+			}
+			$result[] = ["week"=>$i, "title"=>$day_ds." ".$this->monthes[$i]." - ".$day_de." ".$this->monthes[$i]];
+			
+			//echo $this->monthes[$i];
+		}
+		
+		
+		//exit;
+		return $result;
 	}
 	
 	function get_week_list($date, $wk=31) {
@@ -299,14 +524,17 @@ class model_nb extends Model
 				if (($day_ds == 26) and ($month_ds == 9)){$day_ds = 1; $month_ds = 10;}
 				$month_de = date("m", $array['6']);
 				$day_de = date("d", $array['6']);
-				$result[] = ["week"=>$wk, "title"=>$day_ds." ".$this->monthes[(int)$month_ds]." - ".$day_de." ".$this->monthes[(int)$month_ds]];
+				$result[] = ["week"=>$wk, "title"=>$day_ds." ".$this->monthes[(int)$month_ds]." - ".$day_de." ".$this->monthes[(int)$month_de]];
 				$wk++;
 		}
 		return $result;
 	}
 	
 	public function getFinishedContest($city_id){
-		$result = $this->getItemsWhere("`con_status`='1' AND `con_city`={$city_id} AND `con_end_date`<=CURDATE() AND (SELECT COUNT(*) FROM `thebest`.`results` WHERE res_contest=con_id)>0", "con_end_date", null, null, "con_id as id, con_name as name, con_descr as description");
+		if(date("Y-m-d")<"2017-12-22") {
+			$wq = "`con_id`!=9 AND ";
+		}
+		$result = $this->getItemsWhere("$wq `con_status`='1' AND `con_city`={$city_id} AND `con_end_date`<=CURDATE() AND (SELECT COUNT(*) FROM `thebest`.`results` WHERE res_contest=con_id)>0", "con_end_date DESC", null, null, "con_id as id, con_name as name, con_descr as description");
 		return $result;
 	}
 	
@@ -315,6 +543,7 @@ class model_nb extends Model
 		$query = $this->db()->parse("
 		SELECT 
 			*,
+			(SELECT COUNT(*) FROM thebest.{$contest['con_table_prefix']}brend_nomination{$contest['con_table_sufix']} as brend_nomination WHERE brend_nomination.id_nomination=results.res_nom AND results.res_contest=?i  ) as nominants,
 			(SELECT sub_name FROM thebest.subnominations WHERE subnominations.sub_contest=results.res_contest AND subnominations.sub_nom=results.res_nom AND subnominations.sub_id=results.res_subnom ) as sub_nom_name
 		FROM 
 			thebest.results, 
@@ -323,7 +552,7 @@ class model_nb extends Model
 		WHERE 1 
 			AND {$contest['con_table_prefix']}nomination{$contest['con_table_sufix']}.id_nomination=results.res_nom 
 			AND {$contest['con_table_prefix']}brend_nomination{$contest['con_table_sufix']}.id_n_brend=results.res_firm 
-			AND res_contest=?i ORDER BY nomination, res_subnom, res_pos", $contest['con_id']);
+			AND res_contest=?i ORDER BY nomination, res_subnom, res_pos", $contest['con_id'], $contest['con_id']);
 			$rows = $this->db()->GetAll($query);
 			$list=array();
 			foreach($rows as $i=>$row){
@@ -338,6 +567,7 @@ class model_nb extends Model
 								"name"=>$row['sub_nom_name'],
 								"ico"=>'http://xn--90ax.xn--e1asq.xn--p1ai/images/complete_img_small.png',
 								"percent"=>$row['res_nom_percent'],
+								"nominants"=>$row['nominants'],
 								"victories"=>array(),
 						);
 					}
@@ -350,6 +580,7 @@ class model_nb extends Model
 								"name"=>$row['nomination'],
 								"ico"=>'http://xn--90ax.xn--e1asq.xn--p1ai/images/complete_img_small.png',
 								"percent"=>$row['res_nom_percent'],
+								"nominants"=>$row['nominants'],
 								"victories"=>array(),
 						);
 					}
@@ -360,19 +591,39 @@ class model_nb extends Model
 						"name"=>$row['nomination_brend'],
 						"votes"=>$row['res_votes'],
 						"percent"=>$row['res_percent'],
+						"nominants"=>$row['nominants'],
 					);
 			}
 			$list2=array();
 			foreach($list as $i=>$row){
 				$list2[] = $row;
 			}
-		return $list2;
+		if(count($list2)>0){
+			return $list2;
+		}
 	}
 	
 	public function getResultsContestDetails($contest_id, $brend_id){
 		$contest = $this->getItem($contest_id);
-			$results = $this->db()->getRow("SELECT 
-				(SELECT nomination_brend FROM thebest.{$contest['con_table_prefix']}brend_nomination{$contest['con_table_sufix']} WHERE `id_n_brend`={$brend_id}) as brend_mame,
+			$results = $this->db()->getRow("
+			SELECT
+				brend_name,
+				res_percent,
+				( 100 / vsego * 18_man) as percent_18_man,
+				( 100 / vsego * 18_woman) as percent_18_woman,
+				( 100 / vsego * 25_man) as percent_25_man,
+				( 100 / vsego * 25_woman) as percent_25_woman,
+				( 100 / vsego * 35_man) as percent_35_man,
+				( 100 / vsego * 35_woman) as percent_35_woman,
+				( 100 / vsego * 45_man) as percent_45_man,
+				( 100 / vsego * 45_woman) as percent_45_woman,
+				( 100 / vsego * 55_man) as percent_55_man,
+				( 100 / vsego * 55_woman) as percent_55_woman,
+				( 100 / vsego * 56_man) as percent_56_man,
+				( 100 / vsego * 56_woman) as percent_56_woman
+			FROM (
+			SELECT 
+				(SELECT nomination_brend FROM thebest.{$contest['con_table_prefix']}brend_nomination{$contest['con_table_sufix']} WHERE `id_n_brend`={$brend_id}) as brend_name,
 				(SELECT res_percent FROM thebest.results WHERE res_contest={$contest_id} AND `res_firm`={$brend_id}) as res_percent,
 				COUNT(*) as vsego,
 				(SELECT COUNT(*) FROM (SELECT {$contest['con_table_prefix']}user{$contest['con_table_sufix']}.* FROM thebest.{$contest['con_table_prefix']}votes{$contest['con_table_sufix']}, thebest.{$contest['con_table_prefix']}user{$contest['con_table_sufix']} WHERE 1 AND {$contest['con_table_prefix']}votes{$contest['con_table_sufix']}.id_user={$contest['con_table_prefix']}user{$contest['con_table_sufix']}.id_user AND `id_n_brend`={$brend_id}) as all_votes WHERE age=1 AND sex=1) as `18_man`,
@@ -387,8 +638,26 @@ class model_nb extends Model
 				(SELECT COUNT(*) FROM (SELECT {$contest['con_table_prefix']}user{$contest['con_table_sufix']}.* FROM thebest.{$contest['con_table_prefix']}votes{$contest['con_table_sufix']}, thebest.{$contest['con_table_prefix']}user{$contest['con_table_sufix']} WHERE 1 AND {$contest['con_table_prefix']}votes{$contest['con_table_sufix']}.id_user={$contest['con_table_prefix']}user{$contest['con_table_sufix']}.id_user AND `id_n_brend`={$brend_id}) as all_votes WHERE age=5 AND sex=2) as `55_woman`,
 				(SELECT COUNT(*) FROM (SELECT {$contest['con_table_prefix']}user{$contest['con_table_sufix']}.* FROM thebest.{$contest['con_table_prefix']}votes{$contest['con_table_sufix']}, thebest.{$contest['con_table_prefix']}user{$contest['con_table_sufix']} WHERE 1 AND {$contest['con_table_prefix']}votes{$contest['con_table_sufix']}.id_user={$contest['con_table_prefix']}user{$contest['con_table_sufix']}.id_user AND `id_n_brend`={$brend_id}) as all_votes WHERE age=6 AND sex=1) as `56_man`,
 				(SELECT COUNT(*) FROM (SELECT {$contest['con_table_prefix']}user{$contest['con_table_sufix']}.* FROM thebest.{$contest['con_table_prefix']}votes{$contest['con_table_sufix']}, thebest.{$contest['con_table_prefix']}user{$contest['con_table_sufix']} WHERE 1 AND {$contest['con_table_prefix']}votes{$contest['con_table_sufix']}.id_user={$contest['con_table_prefix']}user{$contest['con_table_sufix']}.id_user AND `id_n_brend`={$brend_id}) as all_votes WHERE age=6 AND sex=2) as `56_woman`
-			FROM (SELECT {$contest['con_table_prefix']}user{$contest['con_table_sufix']}.* FROM thebest.{$contest['con_table_prefix']}votes{$contest['con_table_sufix']}, thebest.{$contest['con_table_prefix']}user{$contest['con_table_sufix']} WHERE 1 AND {$contest['con_table_prefix']}votes{$contest['con_table_sufix']}.id_user={$contest['con_table_prefix']}user{$contest['con_table_sufix']}.id_user AND `id_n_brend`={$brend_id}) as all_votes");
-		return $results;
+			FROM (SELECT {$contest['con_table_prefix']}user{$contest['con_table_sufix']}.* FROM thebest.{$contest['con_table_prefix']}votes{$contest['con_table_sufix']}, thebest.{$contest['con_table_prefix']}user{$contest['con_table_sufix']} WHERE 1 AND {$contest['con_table_prefix']}votes{$contest['con_table_sufix']}.id_user={$contest['con_table_prefix']}user{$contest['con_table_sufix']}.id_user AND `id_n_brend`={$brend_id}) as all_votes
+			) as t
+			");
+		$result = [];
+		if(!empty($results)){
+			$result = [
+				'name' => $results['brend_name'],
+				'percent' => $results['res_percent'],
+				'items' => [
+					[ 'caption' => 'до 18 лет', 'man' => $results['percent_18_man'], 'woman' => $results['percent_18_woman'] ],
+					[ 'caption' => '18-25 лет', 'man' => $results['percent_25_man'], 'woman' => $results['percent_25_woman'] ],
+					[ 'caption' => '26-35 лет', 'man' => $results['percent_35_man'], 'woman' => $results['percent_35_woman'] ],
+					[ 'caption' => '36-45 лет', 'man' => $results['percent_45_man'], 'woman' => $results['percent_45_woman'] ],
+					[ 'caption' => '46-55 лет', 'man' => $results['percent_55_man'], 'woman' => $results['percent_55_woman'] ],
+					[ 'caption' => 'после 56 лет', 'man' => $results['percent_56_man'], 'woman' => $results['percent_56_woman'] ],
+				]
+			];
+		}
+		
+		return $result;
 	}
 	
 }

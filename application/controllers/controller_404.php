@@ -5,7 +5,8 @@ class Controller_404 extends Controller
 		
 		$this->view = new View('404.tpl');
 		$this->view->headers['title'] =  '404 - страница не найдена. Город24: Всегда там где ты!';
-		
+		$this->view->notRender();
+		$this->view->renderBody();
 	}
 
 }

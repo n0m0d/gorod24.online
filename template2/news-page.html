@@ -1,0 +1,748 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+	<meta charset="utf-8">
+
+	<title>Новости - страница</title>
+	<meta name="description" content="">
+
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+
+	<meta property="og:image" content="path/to/image.jpg">
+	<link rel="shortcut icon" href="img/favicon/favicon.ico" type="image/x-icon">
+	<link rel="apple-touch-icon" href="img/favicon/apple-touch-icon.png">
+	<link rel="apple-touch-icon" sizes="72x72" href="img/favicon/apple-touch-icon-72x72.png">
+	<link rel="apple-touch-icon" sizes="114x114" href="img/favicon/apple-touch-icon-114x114.png">
+
+	<link rel="stylesheet" href="libs/bootstrap/css/bootstrap.min.css">
+	<link rel="stylesheet" href="libs/simple-line-icons/css/simple-line-icons.css">
+	<link rel="stylesheet" href="libs/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" href="libs/chosen/css/chosen.css">
+	<link rel="stylesheet" href="libs/slick/css/slick.css">
+	<link rel="stylesheet" href="libs/owl/css/owl.carousel.css">
+	<link rel="stylesheet" href="libs/fotorama/css/fotorama.css">
+	<link rel="stylesheet" href="libs/jquery-ui/css/jquery-ui.min.css">
+	<link rel="stylesheet" href="libs/noui-slider/css/nouislider.min.css">
+	<link rel="stylesheet" href="css/main.min.css">
+
+	<!-- Chrome, Firefox OS and Opera -->
+	<meta name="theme-color" content="#000">
+	<!-- Windows Phone -->
+	<meta name="msapplication-navbutton-color" content="#000">
+	<!-- iOS Safari -->
+	<meta name="apple-mobile-web-app-status-bar-style" content="#000">
+
+	<script src="libs/jquery/jquery.min.js"></script>
+	<script src="libs/bootstrap/js/bootstrap.min.js"></script>
+	<script src="libs/chosen/js/chosen.jquery.js"></script>
+	<script src="libs/slick/js/slick.min.js"></script>
+	<script src="libs/owl/js/owl.carousel.min.js"></script>
+	<script src="libs/fotorama/js/fotorama.js"></script>
+	<script src="libs/jquery-ui/js/jquery-ui.min.js"></script>
+	<script src="libs/noui-slider/js/nouislider.min.js"></script>
+	<script src="libs/wNumb/wNumb.js"></script>
+	<script src="js/common-news.js"></script>
+
+</head>
+
+<body>
+
+	<header class="main-header">
+		<div class="main-wrap">
+			<div class="container">
+				<div class="sect-1">
+					<div class="logo-wrap">
+						<div class="logo">
+							<a href="/">
+								<img src="img/logo-head.png" alt="ФЕО.РФ">
+							</a>
+						</div>
+					</div>
+				</div>
+				<div class="sect-2">
+					<div class="auth-wrap">
+						<div class="login"><span class="icon-user"></span><a href="#">Вход</a></div>
+						<div class="reg"><a href="#">Регистрация</a></div>
+					</div>
+					<div class="location-wrap">
+						<div class="location">
+							<span class="icon-location-pin"></span>
+							<select name="city-filter" class="city-filter" id="city-filter">
+								<option value="Феодосия">Феодосия</option>
+								<option value="Керчь">Керчь</option>
+							</select>
+						</div>
+					</div>
+				</div>
+				<div class="sect-3">
+					<div class="add-listing">
+						<span class="icon-plus"></span>
+						<a href="#">Добавить объявление</a>
+					</div>
+					<div class="items-wrap">
+						<div class="item">
+							<span class="icon-wrap"><i class="fa mini fa-usd" aria-hidden="true"></i></span>
+							<div><span>60</span> р.</div>
+						</div>
+						<div class="item">
+							<span class="icon-wrap"><i class="fa mini fa-eur" aria-hidden="true"></i></span>
+							<div><span>70</span> р.</div>
+						</div>
+						<div class="item">
+							<i class="fa fa-thermometer-three-quarters" aria-hidden="true"></i>
+							<div><span>+7</span> <span class="temperature"> °C</span></div>
+						</div>
+						<div class="item">
+							<i class="fa fa-tint" aria-hidden="true"></i>
+							<div><span>+7</span> <span class="temperature"> °C</span></div>
+						</div>
+					</div>
+				</div>
+				<div class="sect-4">
+					<div class="banner-wrap">
+						<div class="banner">
+							<a href="#">
+								<img class="img-responsive" src="img/banners/banner-1.jpg" alt="alt">
+							</a>
+						</div>
+					</div>
+					<div class="items-wrap">
+						<div class="item">
+							<span class="icon-wrap"><i class="fa mini fa-usd" aria-hidden="true"></i></span>
+							<div><span>60</span> р.</div>
+						</div>
+						<div class="item">
+							<span class="icon-wrap"><i class="fa mini fa-eur" aria-hidden="true"></i></span>
+							<div><span>70</span> р.</div>
+						</div>
+						<div class="item">
+							<i class="fa fa-thermometer-three-quarters" aria-hidden="true"></i>
+							<div><span>+7</span> <span class="temperature"> °C</span></div>
+						</div>
+						<div class="item">
+							<i class="fa fa-tint" aria-hidden="true"></i>
+							<div><span>+7</span> <span class="temperature"> °C</span></div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<nav class="main-menu">
+				<div class="container nps">
+					<ul class="menu hidden-xs">
+						<li><a href="index.html"><span class="icon-home"></span></a></li>
+						<li class="active">
+							<a href="news.html">Новости</a>
+							<ul>
+								<li><a href="news-page.html">Страница новости</a></li>
+							</ul>
+						</li>
+						<li>
+							<a href="ads.html">Объявления</a>
+							<ul>
+								<li><a href="ads-page.html">Страница объявления</a></li>
+							</ul>
+						</li>
+						<li><a href="#">Вопросы</a></li>
+						<li><a href="#">Работа</a></li>
+						<li>
+							<a href="catalog.html">Бизнес каталог</a>
+							<ul>
+								<li><a href="catalog-page.html">Страница каталога</a></li>
+								<li><a href="firm.html">Фирма</a></li>
+							</ul>
+						</li>
+						<li class="hidden-sm hidden-xs"><a href="#">Веб-камеры</a></li>
+						<li class="hidden-sm hidden-xs"><a href="#">Фото</a></li>
+						<li class="hidden-md hidden-sm hidden-xs"><a href="#">Радио</a></li>
+						<li class="hidden-md hidden-sm hidden-xs"><a href="#">История</a></li>
+						<li class="hidden-md hidden-sm hidden-xs"><a href="#">Анонсы</a></li>
+						<li>
+							<a href="#">Ещё</a>
+							<ul>
+								<li class="hidden-lg hidden-md"><a href="#">Веб-камеры</a></li>
+								<li class="hidden-lg hidden-md"><a href="#">Фото</a></li>
+								<li class="hidden-lg"><a href="#">Радио</a></li>
+								<li class="hidden-lg"><a href="#">История</a></li>
+								<li class="hidden-lg"><a href="#">Анонсы</a></li>
+							</ul>
+						</li>
+					</ul>
+
+					<div class="toggle-menu-wrap">
+						<a href="#" class="toggle-menu hidden-lg hidden-md hidden-sm"><span></span></a>
+					</div>
+
+					<div class="auth-wrap hidden-lg hidden-md hidden-sm">
+						<div class="login"><a href="#">Вход</a></div>
+						<div class="reg"><a href="#">Регистрация</a></div>
+					</div>
+
+					<span class="search-button">
+								<i class="fa fa-search" aria-hidden="true"></i>
+								<input type="text" class="search-input" placeholder="Поиск...">
+							</span>
+
+					<div class="toggle-mobile-menu hidden-lg hidden-md hidden-sm">
+						<ul class="mobile-block-menu">
+							<li><a href="#">Главная</a></li>
+							<li class="has-drop-mobile">
+								<a href="#">Новости</a>
+								<ul>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+								</ul>
+							</li>
+							<li><a href="#">Объявления</a></li>
+							<li><a href="#">Вопросы</a></li>
+							<li><a href="#">Работа</a></li>
+							<li><a href="#">Бизнес каталог</a></li>
+							<li><a href="#">Веб-камеры</a></li>
+							<li><a href="#">Фото</a></li>
+							<li><a href="#">Радио</a></li>
+							<li><a href="#">Газета</a></li>
+							<li class="has-drop-mobile">
+								<a href="#">Ещё</a>
+								<ul>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+								</ul>
+							</li>
+							<li class="has-drop-mobile">
+								<a href="#">Ещё</a>
+								<ul>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+								</ul>
+							</li>
+							<li class="has-drop-mobile">
+								<a href="#">Ещё</a>
+								<ul>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+								</ul>
+							</li>
+							<li class="has-drop-mobile">
+								<a href="#">Ещё</a>
+								<ul>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+								</ul>
+							</li>
+							<li class="has-drop-mobile">
+								<a href="#">Ещё</a>
+								<ul>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+									<li><a href="#">Пункт</a><em><i></i></em></li>
+								</ul>
+							</li>
+						</ul>
+					</div>
+				</div>
+			</nav>
+			<div class="main-menu-line hidden-xs"></div>
+		</div>
+	</header>
+
+	<main class="main-news-page">
+		<div class="container">
+			<div class="main-banners">
+				<div class="row">
+					<div class="col-md-6">
+						<div class="banner-wrap">
+							<a href="#">
+								<img class="img-responsive" src="img/banners/banner-2.jpg" alt="alt">
+							</a>
+						</div>
+					</div>
+					<div class="col-md-6">
+						<div class="banner-wrap">
+							<a href="#">
+								<img class="img-responsive" src="img/banners/banner-3.jpg" alt="alt">
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+			<section class="section-1">
+				<div class="row">
+					<div class="col-md-3 hidden-sm hidden-xs block-sticker-wrap">
+						<aside>
+							<div class="read-more">
+								<h2>Читать так-же</h2>
+								<div class="item-wrap">
+									<a href="#" class="item">
+										Мать увидела фото похищенной дочери на сайте проституток и вызвала её как клиент
+									</a>
+								</div>
+								<div class="item-wrap">
+									<a href="#" class="item">
+										Мать увидела фото похищенной дочери на сайте проституток и вызвала её как клиент
+									</a>
+								</div>
+								<div class="item-wrap">
+									<a href="#" class="item">
+										Мать увидела фото похищенной дочери на сайте проституток и вызвала её как клиент
+									</a>
+								</div>
+								<div class="item-wrap">
+									<a href="#" class="item">
+										Мать увидела фото похищенной дочери на сайте проституток и вызвала её как клиент
+									</a>
+								</div>
+								<div class="item-wrap">
+									<a href="#" class="item">
+										Мать увидела фото похищенной дочери на сайте проституток и вызвала её как клиент
+									</a>
+								</div>
+							</div>
+							<div class="vertical-banners">
+								<div class="banner-wrap">
+									<a href="#">
+										<img class="img-responsive" src="img/banners/banner-6.jpg" alt="alt">
+									</a>
+								</div>
+							</div>
+							<div class="vertical-banners">
+								<div class="banner-wrap">
+									<a href="#">
+										<img class="img-responsive" src="img/banners/banner-6.jpg" alt="alt">
+									</a>
+								</div>
+							</div>
+						</aside>
+					</div>
+					<div class="col-md-6">
+						<div class="post-wrap">
+							<div class="tags">
+								<a href="#">#Новости</a>
+								<a href="#">#Фильмы</a>
+								<a href="#">#Премьеры</a>
+							</div>
+							<h1>
+								В Феодосии неизвестный сбил пожилого пешехода и скрылся с места
+							</h1>
+							<div class="time">
+								<span class="icon-clock"></span><span class="text-clock">Сегодня ‐ 09:58</span>
+							</div>
+							<div class="views">
+								<span class="icon-eye"></span><span class="text-views">505</span>
+							</div>
+							<div class="fotorama" data-allowfullscreen="true" data-click="false" data-nav="thumbs" data-loop="true" data-width="100%" data-fit="cover">
+								<img src="img/fotorama/item-1.jpg" alt="alt">
+								<img src="img/fotorama/item-2.jpg" alt="alt">
+								<img src="img/fotorama/item-3.jpg" alt="alt">
+								<img src="img/fotorama/item-4.jpg" alt="alt">
+								<img src="img/fotorama/item-5.jpg" alt="alt">
+								<img src="img/fotorama/item-6.jpg" alt="alt">
+								<img src="img/fotorama/item-7.jpg" alt="alt">
+								<img src="img/fotorama/item-8.jpg" alt="alt">
+							</div>
+							<div class="content-wrap">
+								<p>В ходе экспериментов над лабораторными мышами, учёные выяснили, что особи, которым "встроили" человеческие варианты гена, значительно быстрее набирают лишний вес. Оказалось, что анкирин-В регулирует работу белка Glut4, который отвечает за скорость попадания глюкозы в жировые клетки.</p>
+								<span class="quote-text">
+									Мы считаем, что этот ген помогал нашим предкам сохранять энергию в голодные времена. Но теперь, когда мы не испытываем недостатка в пище, эта мутация анкирина может превратить ожирение в эпидемию, — прокомментировал
+								</span>
+								<p><b>В ходе экспериментов над лабораторными мышами, учёные выяснили, что особи, которым "встроили" человеческие варианты гена, значительно быстрее набирают лишний вес. Оказалось, что анкирин-В регулирует работу белка Glut4, который отвечает за скорость попадания глюкозы в жировые клетки.</b></p>
+							</div>
+						</div>
+						<div class="banner-wrap">
+							<a href="#">
+								<img class="img-responsive" src="img/banners/banner-2.jpg" alt="alt">
+							</a>
+						</div>
+						<div class="comments-wrap">
+							<h2>Комментарии</h2>
+							<div class="add-comment">
+								<div class="left-col">
+									<div class="ava-wrap">
+										<img src="img/avatars/item-1.jpg" alt="alt">
+									</div>
+								</div>
+								<div class="right-col">
+									<div class="button">
+										<a href="#">Оставить комметарий</a>
+									</div>
+								</div>
+								<div class="comments">
+									<div class="comment">
+										<div class="left-col">
+											<div class="ava-wrap">
+												<img src="img/avatars/item-1.jpg" alt="alt">
+											</div>
+										</div>
+										<div class="right-col">
+											<div class="user-comment">
+												<div class="head">
+													<div class="name">Aruba Miro</div>
+													<div class="time">18 часов назад</div>
+												</div>
+												<div class="content">
+													<p>бедные американцы в большинстве своем явились носителями плохого гена, а жрут не в себя просто так, ведь не от этого толстеют бедны</p>
+												</div>
+												<div class="foot">
+													<div class="review">
+														<a href="#">Ответить</a>
+													</div>
+													<div class="likes">
+														<a href="#"><span class="icon-like"></span></a><span class="text-like">505</span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="comment review">
+										<div class="left-col">
+											<div class="ava-wrap">
+												<img src="img/avatars/item-1.jpg" alt="alt">
+											</div>
+										</div>
+										<div class="right-col">
+											<div class="user-comment">
+												<div class="head">
+													<div class="name">Aruba Miro</div>
+													<div class="time">18 часов назад</div>
+												</div>
+												<div class="content">
+													<p>бедные американцы в большинстве своем явились носителями плохого гена, а жрут не в себя просто так, ведь не от этого толстеют бедны</p>
+												</div>
+												<div class="foot">
+													<div class="review">
+														<a href="#">Ответить</a>
+													</div>
+													<div class="likes">
+														<a href="#"><span class="icon-like"></span></a><span class="text-like">505</span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="comment">
+										<div class="left-col">
+											<div class="ava-wrap">
+												<img src="img/avatars/item-1.jpg" alt="alt">
+											</div>
+										</div>
+										<div class="right-col">
+											<div class="user-comment">
+												<div class="head">
+													<div class="name">Aruba Miro</div>
+													<div class="time">18 часов назад</div>
+												</div>
+												<div class="content">
+													<p>бедные американцы в большинстве своем явились носителями плохого гена, а жрут не в себя просто так, ведь не от этого толстеют бедны</p>
+												</div>
+												<div class="foot">
+													<div class="review">
+														<a href="#">Ответить</a>
+													</div>
+													<div class="likes">
+														<a href="#"><span class="icon-like"></span></a><span class="text-like">505</span>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div class="news-today">
+							<h2>Новости за сегодня:</h2>
+							<ul>
+								<li><span>15:09</span><a href="#">Феодосийцам покажут захватывающее шоу</a></li>
+								<li><span>15:09</span><a href="#">Феодосийцам покажут захватывающее шоу</a></li>
+								<li><span>15:09</span><a href="#">Феодосийцам покажут захватывающее шоу</a></li>
+								<li><span>15:09</span><a href="#">Феодосийцам покажут захватывающее шоу</a></li>
+								<li><span>15:09</span><a href="#">Феодосийцам покажут захватывающее шоу</a></li>
+								<li><span>15:09</span><a href="#">Феодосийцам покажут захватывающее шоу</a></li>
+								<li><span>15:09</span><a href="#">Феодосийцам покажут захватывающее шоу</a></li>
+							</ul>
+						</div>
+					</div>
+					<div class="col-md-3 hidden-sm hidden-xs block-sticker-wrap">
+						<aside>
+							<div class="block-sticker">
+								<h3>Мебельная фабрика Дюарт</h3>
+								<p>Мебель по любым вашим размерам Подробности на сайте</p>
+								<div class="phone">
+									<span class="icon-phone"></span><span class="number">+7 (978) 701-98-16</span>
+								</div>
+							</div>
+							<div class="block-sticker">
+								<h3>Мебельная фабрика Дюарт</h3>
+								<p>Мебель по любым вашим размерам Подробности на сайте</p>
+								<div class="phone">
+									<span class="icon-phone"></span><span class="number">+7 (978) 701-98-16</span>
+								</div>
+							</div>
+							<div class="block-sticker">
+								<h3>Мебельная фабрика Дюарт</h3>
+								<p>Мебель по любым вашим размерам Подробности на сайте</p>
+								<div class="phone">
+									<span class="icon-phone"></span><span class="number">+7 (978) 701-98-16</span>
+								</div>
+							</div>
+							<div class="block-sticker">
+								<h3>Мебельная фабрика Дюарт</h3>
+								<p>Мебель по любым вашим размерам Подробности на сайте</p>
+								<div class="phone">
+									<span class="icon-phone"></span><span class="number">+7 (978) 701-98-16</span>
+								</div>
+							</div>
+							<div class="block-sticker">
+								<h3>Мебельная фабрика Дюарт</h3>
+								<p>Мебель по любым вашим размерам Подробности на сайте</p>
+								<div class="phone">
+									<span class="icon-phone"></span><span class="number">+7 (978) 701-98-16</span>
+								</div>
+							</div>
+							<div class="block-sticker">
+								<h3>Мебельная фабрика Дюарт</h3>
+								<p>Мебель по любым вашим размерам Подробности на сайте</p>
+								<div class="phone">
+									<span class="icon-phone"></span><span class="number">+7 (978) 701-98-16</span>
+								</div>
+							</div>
+							<div class="block-sticker">
+								<h3>Мебельная фабрика Дюарт</h3>
+								<p>Мебель по любым вашим размерам Подробности на сайте</p>
+								<div class="phone">
+									<span class="icon-phone"></span><span class="number">+7 (978) 701-98-16</span>
+								</div>
+							</div>
+							<div class="block-sticker">
+								<h3>Мебельная фабрика Дюарт</h3>
+								<p>Мебель по любым вашим размерам Подробности на сайте</p>
+								<div class="phone">
+									<span class="icon-phone"></span><span class="number">+7 (978) 701-98-16</span>
+								</div>
+							</div>
+							<div class="block-sticker">
+								<h3>Мебельная фабрика Дюарт</h3>
+								<p>Мебель по любым вашим размерам Подробности на сайте</p>
+								<div class="phone">
+									<span class="icon-phone"></span><span class="number">+7 (978) 701-98-16</span>
+								</div>
+							</div>
+							<div class="block-sticker">
+								<h3>Мебельная фабрика Дюарт</h3>
+								<p>Мебель по любым вашим размерам Подробности на сайте</p>
+								<div class="phone">
+									<span class="icon-phone"></span><span class="number">+7 (978) 701-98-16</span>
+								</div>
+							</div>
+							<div class="block-sticker">
+								<h3>Мебельная фабрика Дюарт</h3>
+								<p>Мебель по любым вашим размерам Подробности на сайте</p>
+								<div class="phone">
+									<span class="icon-phone"></span><span class="number">+7 (978) 701-98-16</span>
+								</div>
+							</div>
+							<div class="block-sticker">
+								<h3>Мебельная фабрика Дюарт</h3>
+								<p>Мебель по любым вашим размерам Подробности на сайте</p>
+								<div class="phone">
+									<span class="icon-phone"></span><span class="number">+7 (978) 701-98-16</span>
+								</div>
+							</div>
+							<div class="block-sticker">
+								<h3>Мебельная фабрика Дюарт</h3>
+								<p>Мебель по любым вашим размерам Подробности на сайте</p>
+								<div class="phone">
+									<span class="icon-phone"></span><span class="number">+7 (978) 701-98-16</span>
+								</div>
+							</div>
+							<div class="block-sticker">
+								<h3>Мебельная фабрика Дюарт</h3>
+								<p>Мебель по любым вашим размерам Подробности на сайте</p>
+								<div class="phone">
+									<span class="icon-phone"></span><span class="number">+7 (978) 701-98-16</span>
+								</div>
+							</div>
+							<div class="block-sticker">
+								<h3>Мебельная фабрика Дюарт</h3>
+								<p>Мебель по любым вашим размерам Подробности на сайте</p>
+								<div class="phone">
+									<span class="icon-phone"></span><span class="number">+7 (978) 701-98-16</span>
+								</div>
+							</div>
+							<div class="block-sticker">
+								<h3>Мебельная фабрика Дюарт</h3>
+								<p>Мебель по любым вашим размерам Подробности на сайте</p>
+								<div class="phone">
+									<span class="icon-phone"></span><span class="number">+7 (978) 701-98-16</span>
+								</div>
+							</div>
+							<div class="block-sticker">
+								<h3>Мебельная фабрика Дюарт</h3>
+								<p>Мебель по любым вашим размерам Подробности на сайте</p>
+								<div class="phone">
+									<span class="icon-phone"></span><span class="number">+7 (978) 701-98-16</span>
+								</div>
+							</div>
+							<div class="block-sticker">
+								<h3>Мебельная фабрика Дюарт</h3>
+								<p>Мебель по любым вашим размерам Подробности на сайте</p>
+								<div class="phone">
+									<span class="icon-phone"></span><span class="number">+7 (978) 701-98-16</span>
+								</div>
+							</div>
+							<div class="block-sticker">
+								<h3>Мебельная фабрика Дюарт</h3>
+								<p>Мебель по любым вашим размерам Подробности на сайте</p>
+								<div class="phone">
+									<span class="icon-phone"></span><span class="number">+7 (978) 701-98-16</span>
+								</div>
+							</div>
+						</aside>
+					</div>
+				</div>
+			</section>
+		</div>
+	</main>
+
+	<div class="ftc-wpap">
+		<div class="container">
+			<div class="footer-click-button">
+				<span class="icon-arrow-down"></span>
+			</div>
+		</div>
+	</div>
+	<footer class="main-footer">
+		<div class="main-wrap-in">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-3 col-sm-6 footer-block">
+						<div class="logo-wrap">
+							<div class="logo">
+								<a href="/">
+									<img src="img/logo-foot.png" alt="ФЕО.РФ">
+								</a>
+							</div>
+						</div>
+						<p class="copy">
+							Copyright © 2002-2016 feo.ua При полном или частичном использовании материалов ссылка на сайт "feo.ua" обязательна. Отдел рекламы и информации Бизнес центр Владимир г.Феодосия, Чехова, 5 оф. 413. Тел. +7 (978) 824 93 03
+						</p>
+						<div class="social-wrap">
+							<a href="#" class="vk"><i class="fa fa-vk" aria-hidden="true"></i></a>
+							<a href="#" class="od"><i class="fa fa-odnoklassniki" aria-hidden="true"></i></a>
+							<a href="#" class="fb"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+							<a href="#" class="tw"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+						</div>
+					</div>
+					<div class="col-md-3 col-sm-6 footer-block">
+						<div class="link-sect-wrap">
+							<h3>Веб-камеры</h3>
+							<div class="link-sect">
+								<a href="#">Стадион пляжных видов спорта</a>
+								<a href="#">Приемная ЕДИНАЯ РОССИЯ Феодосия</a>
+								<a href="#">Обзорная веб-камера в Береговом</a>
+								<a href="#">Стадион пляжных видов спорта</a>
+								<a href="#">Приемная ЕДИНАЯ РОССИЯ Феодосия</a>
+								<a href="#">Обзорная веб-камера в Береговом</a>
+								<a href="#">Стадион пляжных видов спорта</a>
+								<a href="#">Приемная ЕДИНАЯ РОССИЯ Феодосия</a>
+								<a href="#">Обзорная веб-камера в Береговом</a>
+								<a href="#">Стадион пляжных видов спорта</a>
+								<a href="#">Приемная ЕДИНАЯ РОССИЯ Феодосия</a>
+								<a href="#">Обзорная веб-камера в Береговом</a>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-2 col-sm-4 footer-block">
+						<div class="link-sect-wrap">
+							<h3>Курорты</h3>
+							<div class="link-sect">
+								<a href="#">Феодосия</a>
+								<a href="#">Коктебель</a>
+								<a href="#">Орджоникидзе</a>
+								<a href="#">Береговое</a>
+								<a href="#">Приморский</a>
+							</div>
+						</div>
+						
+					</div>
+					<div class="col-md-2 col-sm-4 footer-block">
+						<div class="link-sect-wrap">
+							<h3>Курорты</h3>
+							<div class="link-sect">
+								<a href="#">Феодосия</a>
+								<a href="#">Коктебель</a>
+								<a href="#">Орджоникидзе</a>
+								<a href="#">Береговое</a>
+								<a href="#">Приморский</a>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-2 col-sm-4 footer-block">
+						<div class="link-sect-wrap">
+							<h3>Курорты</h3>
+							<div class="link-sect">
+								<a href="#">Феодосия</a>
+								<a href="#">Коктебель</a>
+								<a href="#">Орджоникидзе</a>
+								<a href="#">Береговое</a>
+								<a href="#">Приморский</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<div class="main-wrap">
+			<div class="container">
+				<div class="row">
+					<div class="col-md-2 col-sm-3 footer-block">
+						<div class="logo-wrap">
+							<div class="logo">
+								<a href="/">
+									<img src="img/logo-foot.png" alt="ФЕО.РФ">
+								</a>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-6 col-sm-5 footer-block">
+						<p class="copy">
+							Copyright © 2002-2016 feo.ua При полном или частичном использовании материалов ссылка на сайт "feo.ua" обязательна. Отдел рекламы и информации Бизнес центр Владимир г.Феодосия, Чехова, 5 оф. 413. Тел. +7 (978) 824 93 03
+						</p>
+					</div>
+					<div class="col-md-4 col-sm-4 footer-block">
+						<div class="bot-social">
+							<div class="social-title">
+								Мы в соц сетях
+							</div>
+							<div class="social-wrap">
+								<a href="#" class="vk"><i class="fa fa-vk" aria-hidden="true"></i></a>
+								<a href="#" class="od"><i class="fa fa-odnoklassniki" aria-hidden="true"></i></a>
+								<a href="#" class="fb"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+								<a href="#" class="tw"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</footer>
+
+</body>
+</html>

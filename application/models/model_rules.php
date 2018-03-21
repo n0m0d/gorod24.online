@@ -66,18 +66,23 @@ class model_rules extends Model
 		];
 		$this->rubric = new Model($rubrics_config);
 		
+		$this->model_info_categories = new model_info_categories();
+		$this->model_info = new model_info();
+		
 	}
 	
 	public function getRubrics($city_id=0){
-		$result = $this->rubric->getItemsWhere("`status`='1' AND (`city_id`='0' OR `city_id`='{$city_id}')", 'id', null, null, "id, name, description");
+		//$result = $this->rubric->getItemsWhere("`status`='1' AND (`city_id`='0' OR `city_id`='{$city_id}')", 'id', null, null, "id, name, description");
+		$result = $this->model_info_categories->getItemsWhere("`status`='1'", 'id', null, null, "id, title as name");
 		foreach($result as $i=>$r){
-			$result[$i]['items'] = $this->getItemsWhere("`status`='1' AND (`city_id`='0' OR `city_id`='{$city_id}') AND `rubric_id`='{$r['id']}'", 'id', null, null, "id, name");
+			$result[$i]['items'] = $this->model_info->getItemsWhere("`status`='1' AND `cat_id`='{$r['id']}'", 'id', null, null, "id, title as name");
 		}
 		return $result;
 	}
 	
 	public function getRule($city_id=0, $rule_id){
-		$result = $this->getItemsWhere("`status`='1' AND (`city_id`='0' OR `city_id`='{$city_id}') AND `id`={$rule_id}", 'id', null, null, "id, name, text");
+		//$result = $this->getItemsWhere("`status`='1' AND (`city_id`='0' OR `city_id`='{$city_id}') AND `id`={$rule_id}", 'id', null, null, "id, name, text");
+		$result = $this->model_info->getItem($rule_id, "id, title as name, text");
 		return $result;
 	}
 	

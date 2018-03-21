@@ -21,18 +21,21 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/css/bootstrap.min.css" integrity="sha384-PsH8R72JQ3SOdhVi3uxftmaW6Vc51MKb0q5P2rRUpPvrszuE4W1povHYgTpBfshb" crossorigin="anonymous">
 	
 	<script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+	<script src="/admin/application/views/js/tinyMce_photo.js"></script>
+	
 	<script src="/admin/application/views/js/jquery.ui.datepicker-ru.js"></script>
 	<script src="/admin/application/views/js/jquery-ui-timepicker-addon.js"></script>
 	
 	<script src="/admin/application/views/js/chosen.jquery.js"></script>
 	<link rel="stylesheet" type="text/css"  href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.7.0/chosen.css" />
 	
-	<link rel="shortcut icon" href="/admin/application/views/img/favicon/favicon.ico" type="image/x-icon">
-	<link rel="apple-touch-icon" href="/admin/application/views/img/favicon/apple-touch-icon.png">
-	<link rel="apple-touch-icon" sizes="72x72" href="/admin/application/views/img/favicon/apple-touch-icon-72x72.png">
-	<link rel="apple-touch-icon" sizes="114x114" href="/admin/application/views/img/favicon/apple-touch-icon-114x114.png">
+	<link rel="shortcut icon" href="/admin/application/views/img/favicon/favicon.ico?ver=1.1" type="image/x-icon">
+	<link rel="apple-touch-icon" href="/admin/application/views/img/favicon/apple-touch-icon.png?ver=1.1">
+	<link rel="apple-touch-icon" sizes="72x72" href="/admin/application/views/img/favicon/apple-touch-icon-72x72.png?ver=1.1">
+	<link rel="apple-touch-icon" sizes="114x114" href="/admin/application/views/img/favicon/apple-touch-icon-114x114.png?ver=1.1">
 
 	<link rel="stylesheet" href="/admin/application/views/libs/font-awesome/css/font-awesome.min.css">
+	<link rel="stylesheet" href="/admin/application/views/css/jquery.imgareaselect/imgareaselect-animated.css">
 	<link rel="stylesheet" href="/admin/application/views/css/nprogress.css">
 	<script src="/admin/application/views/js/nprogress.js"></script>
 	<link rel="stylesheet" href="/admin/application/views/css/footable.bootstrap.css">
@@ -47,8 +50,27 @@
 	<script type="text/javascript" src="/admin/application/views/js/plupload/plupload.full.min.js"></script>
 	<script type="text/javascript" src="/admin/application/views/js/plupload/jquery.ui.plupload/jquery.ui.plupload.min.js"></script>
 	<script type="text/javascript" src="/admin/application/views/js/plupload/i18n/ru.js"></script>
+	<script type="text/javascript" src="/admin/application/views/js/spf.js"></script>
+	<script type="text/javascript" src="/admin/application/views/js/jquery.imgareaselect.min.js"></script>
+	<script type="text/javascript" src="/admin/application/views/js/jquery.doubleScroll.js"></script>
+	<script src="https://unpkg.com/sweetalert2@7.1.2/dist/sweetalert2.all.js"></script>
+	<style>
+	.swal2-popup .swal2-title { line-height:100%;}
+	</style>
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<!--[if lt IE 9]>
+	<script src="https://code.highcharts.com/modules/oldie.js"></script>
+	<![endif]-->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" />
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js"></script>
 	
-	<script src="/admin/application/views/js/common.js"></script>
+	<link rel="stylesheet" href="/admin/application/views/libs/responsive-table/css/rwd-table.css" />
+	<script type="text/javascript" src="/admin/application/views/libs/responsive-table/js/rwd-table.min.js"></script>
+	
+	<script src="//api-maps.yandex.ru/2.1/?lang=ru_RU" type="text/javascript"></script>
+
+	
+	<script src="/admin/application/views/js/common.js?ver=1.1"></script>
 </head>
 
 <body>
@@ -61,8 +83,8 @@
 			<ul>
 				<li><a href="<?=$GLOBALS['CONFIG']['HTTP_HOST']?>" target="_blank">Сайт</a></li>
 				<li><a href="<?=$GLOBALS['CONFIG']['HTTP_HOST']?>/admin/">Администрирование</a></li>
-				<li><a href="#">Настройки</a></li>
-				<li><a href="#">Помощь</a></li>
+				<li><a href="<?=$GLOBALS['CONFIG']['HTTP_HOST']?>/admin/control/"  class="ajax-load">Настройки</a></li>
+				<li><a href="<?=$GLOBALS['CONFIG']['HTTP_HOST']?>/admin/help/" class="ajax-load">Помощь</a></li>
 			</ul>
 
 			<form class="search">
@@ -74,15 +96,9 @@
 	<header class="main-header">
 		<div class="head-block-1">
 			<div class="logo">
-				<img src="/application/views/feoradio/img/logo.png" height="30px" alt="полезное радио">
-				<!--
+				<!--<img src="/application/views/gorod24/logo_gorod24.gif" height="30px" alt="город 24">-->
 				<div class="logo-left">город</div>
-				<div class="logo-right">
-					<div class="logo-right-text">
-						24
-					</div>
-				</div>
-				-->
+				<div class="logo-right"><div class="logo-right-text">24</div></div>
 			</div>
 			<div class="descr">
 				<div class="descr-text">
@@ -95,10 +111,28 @@
 				<ul class="menu-ul">
 					<li class="menu-ul-li"><a href="<?=$GLOBALS['CONFIG']['HTTP_HOST']?>" target="_blank" class="menu-ul-li-a">Сайт</a></li>
 					<li class="menu-ul-li menu-ul-active"><a href="<?=$GLOBALS['CONFIG']['HTTP_HOST']?>/admin/" class="menu-ul-li-a">Администрирование</a></li>
-					<li class="menu-ul-li"><a href="#" class="menu-ul-li-light"><span class="menu-ul-li-light-img"><i class="fa fa-cog" aria-hidden="true"></i></span>Настройки</a></li>
-					<li class="menu-ul-li"><a href="#" class="menu-ul-li-light"><span class="menu-ul-li-light-img"><i class="fa fa-question-circle" aria-hidden="true"></i></span>Помощь</a></li>
+					<li class="menu-ul-li"><a href="<?=$GLOBALS['CONFIG']['HTTP_HOST']?>/admin/control/" class="menu-ul-li-light"><span class="menu-ul-li-light-img"><i class="fa fa-cog" aria-hidden="true"></i></span>Настройки</a></li>
+					<?php
+					if($this->data['help']) { $cl = ''; }else{ $cl='hidden'; }
+						
+						echo '<li class="menu-ul-li help '.$cl.'"><a id="help-button" data-fancybox data-type="iframe" data-src="'.$this->data['help'].'" data-height="900px" href="javascript:;" class="menu-ul-li-light"><span class="menu-ul-li-light-img"><i class="fa fa-question-circle" aria-hidden="true"></i></span>Помощь</a></li>';
+						?>
+						<script>
+						$(function(){
+							$('a#help-button[data-fancybox]').fancybox({
+								iframe : {
+									css : {
+										width  : '90%',
+										height : '90%'
+									}
+								}
+							});
+							
+						});
+						</script><
+					
 				</ul>
-			</nav>
+				</nav>
 			<form class="search">
 				<input class="search-input" type="text" placeholder="Поиск...">
 			</form>
@@ -119,6 +153,7 @@
 	<section class="main-section">
 		<div class="sections">
 			<div class="sectleft">
+			<!--
 				<a href="<?=$GLOBALS['CONFIG']['HTTP_HOST']?>/admin/buhg/" class="sectleft-item ajax-load <?=($this->data['main-menu']['Бухгалтерия']?'active':'')?>">
 					<span class="sectleft-item-icon"><i class="fa fa-calculator" aria-hidden="true"></i></span>
 					<p class="sectleft-item-text">Бухгалтерия</p>
@@ -127,16 +162,27 @@
 					<span class="sectleft-item-icon"><i class="fa fa-list" aria-hidden="true"></i></span>
 					<p class="sectleft-item-text">Задачи</p>
 				</a>
+			-->	
 				<a href="<?=$GLOBALS['CONFIG']['HTTP_HOST']?>/admin/control/" class="sectleft-item ajax-load <?=($this->data['main-menu']['Управление']?'active':'')?>">
 					<span class="sectleft-item-icon"><i class="fa fa-sliders" aria-hidden="true"></i></span>
 					<p class="sectleft-item-text">Управление</p>
 				</a>
+				<a href="<?=$GLOBALS['CONFIG']['HTTP_HOST']?>/admin/help/" class="spf-link sectleft-item ajax-load <?=($this->data['main-menu']['Помощь']?'active':'')?>">
+					<span class="sectleft-item-icon"><i class="fa fa-question-circle-o" aria-hidden="true"></i></span>
+					<p class="sectleft-item-text">Помощь</p>
+				</a>
+			<!--
 				<a href="<?=$GLOBALS['CONFIG']['HTTP_HOST']?>/admin/settings/" class="sectleft-item ajax-load <?=($this->data['main-menu']['Настройки']?'active':'')?>">
 					<span class="sectleft-item-icon"><i class="fa fa-cog" aria-hidden="true"></i></span>
 					<p class="sectleft-item-text">Настройки</p>
 				</a>
-				<a href="<?=$GLOBALS['CONFIG']['HTTP_HOST']?>/admin/radio/" class="sectleft-item ajax-load <?=($this->data['main-menu']['Радио']?'active':'')?>">
-					<span class="sectleft-item-icon"><i class="fa fa-pinterest-p" aria-hidden="true"></i></span>
-					<p class="sectleft-item-text">Радио</p>
+			-->
+				<a href="<?=$GLOBALS['CONFIG']['HTTP_HOST']?>/admin/app/" class="sectleft-item ajax-load <?=($this->data['main-menu']['Приложение']?'active':'')?>">
+					<span class="sectleft-item-icon"><i class="fa fa-android" aria-hidden="true"></i></span>
+					<p class="sectleft-item-text">Приложение</p>
+				</a>
+				<a href="<?=$GLOBALS['CONFIG']['HTTP_HOST']?>/admin/gorod/" class="sectleft-item ajax-load <?=($this->data['main-menu']['Город24']?'active':'')?>">
+					<span class="sectleft-item-icon"><div class="logo-right" style="width: 20px;height: 20px;"><div class="logo-right-text" style="font-size:10px;line-height: 20px;">24</div></div></span>
+					<p class="sectleft-item-text">Сайт</p>
 				</a>
 			</div>

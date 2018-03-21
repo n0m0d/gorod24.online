@@ -98,7 +98,7 @@ class View
 	}
 	
 	public function renderHeader(){
-		if(file_exists($this->_template_folder.'header.'.$this->_template_extension)){
+		if(file_exists($this->_template_folder.'header.'.$this->_template_extension) and !$this->_head_file){
 			$this->_head_file = $this->_template_folder.'header.'.$this->_template_extension;
 		}
 		if(!empty($this->_head)){ echo $this->_head; } else {
@@ -116,7 +116,7 @@ class View
 	}
 	
 	public function renderFooter(){
-		if(file_exists($this->_template_folder.'footer.'.$this->_template_extension)){
+		if(file_exists($this->_template_folder.'footer.'.$this->_template_extension) and !$this->_footer_file){
 			$this->_footer_file = $this->_template_folder.'footer.'.$this->_template_extension;
 		}
 		if(!empty($this->_footer)){ echo $this->_footer; } else {

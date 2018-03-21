@@ -20,9 +20,10 @@ class Route
 		$model_access = new model_access();
 		$adminAccess = $model_access->getPermission('admin');
 		if(empty($_SESSION['user_id']) or !$adminAccess){
+			header('HTTP/1.0 401 Unauthorized');
 			$view = new View('login.tpl');
 			$view->setTemplatesFolder(ADMINDIR.'/application/views/');
-			$view->headers['title'] = 'Авторизация | Администрирование Полезного радио';
+			$view->headers['title'] = 'Авторизация | Администрирование город 24';
 			$view->renderBody();
 			exit;
 		}
@@ -60,64 +61,144 @@ class Route
 		$_routes = explode('/', $REQUEST_URI);
 		$routes = [];
 		foreach($_routes as $route){
-			if($route != 'admin' and !empty($route))$routes[] = $route;
+			if($route != 'admin' and $route!='')$routes[] = $route;
 		}
 		
-		//sort($routes);
 		// Получаем имя контроллера
 		if ( !empty($routes[0]) ){	
 			$controller = $routes[0];
 		}
-		// Получаем имя экшена
-		if ( !empty($routes[1]) ){
-			$action = $routes[1];
-		}
-		$subActions = [];
-		if(count($routes)>2){
-			for($i=2;$i<count($routes);$i++){
-			$subActions[]=$routes[$i];
-			}
+		$actions=[];
+		foreach ($routes as $i => $route){
+			if($i == 0) { $controller = $route; 	Registry::set('controller', $controller);}
+			else { $actions[]=$route;}
 		}
 		/*
-		if ( !empty($routes[2]) ){
-			header("Location:{$routes[0]}/{$controller}/{$action}");
-		}
-		*/
 		// Добавляем префиксы
-		$controller_name = 'controller_'.$controller;
-		$action_name = 'action_'.$action;
-		$subaction_name = $action_name;
+		$controller_name = 'controller_'.str_replace(array('-', '.'), '_',$controller);
 		// Подцепляем файл с классом контроллера
-		$controller_file = strtolower($controller_name).'.php';
-		$controller_path = ADMINDIR."/application/controllers/".$controller_file; 
+		$controller_path = ADMINDIR."/application/controllers/".strtolower($controller_name).'.php'; 
 		// Если файл контроллера существует, значит его подключаем и определяем. что страница является статической
-		
 		if(file_exists($controller_path)){
-			require_once ADMINDIR.'/application/controllers/'.$controller_file;
-			$controller_name = str_replace('-', '_', $controller_name);
+			require_once $controller_path;
 			if (class_exists($controller_name)){
-				if(!empty($subActions)){
-					$subaction_name = $action_name.'_'.implode('_',$subActions);
-				}
-				if(method_exists($controller_name, $subaction_name)){
-					// вызываем действие контроллера
-					$controller = new $controller_name();
-					$controller->$subaction_name($subActions);
-				}
-				elseif(method_exists($controller_name, $action_name)){
-					// вызываем действие контроллера
-					$controller = new $controller_name();
-					$controller->$action_name($subActions);
-				}
-				else{
-					Route::ErrorPage404();
-				}
-			}	else Route::ErrorPage404();
-		}
-		// Если файл контроллера отсутствует подключаем файл контроллера динамических страниц, который отвечает за поиск диначеской страници в БД
-		else{
+				$controller_obj = new $controller_name();
+				$this->runAction($controller_obj, $actions);
+			}	else Route::ErrorPage404(); 
+		}*/
+		if(self::checkControllerFolder(ADMINDIR."/application/controllers", $routes)){
+			//Поиск контроллера начиная с корнеаого каталога, если контроллер ненайден, то вернет false и продолжит выполнение скрипта.
+		}		else{
 			Route::ErrorPage404();
 		}
+	}
+	
+	
+	private function checkControllerFolder($folder, $routes=array())	{
+		$new_routes = $routes;
+		if(!empty($routes)){
+		foreach($routes as $i=>$route){
+			if(is_dir("{$folder}/{$route}")){
+				array_shift($new_routes);
+				return self::checkControllerFolder("{$folder}/{$route}", $new_routes);
+			}
+			else {
+				return self::runControllerFolder("{$folder}", $new_routes);
+			}
+		}}
+		else {
+			return self::runControllerFolder("{$folder}", $new_routes);
+		}
+		return true;
+	}
+	
+	private function runControllerFolder($folder, $routes=array())	{
+		if($folder!=ADMINDIR."/application/controllers"){
+		$actions=[];
+		if(!empty($routes)){
+			foreach ($routes as $i => $route){
+				if($i == 0) { $controller = $route; 	Registry::set('controller', $controller);}
+				else { $actions[]=$route;}
+			}
+		} else { $controller="index"; }
+		$default_controller_name = 'controller_index';
+		$controller_name = 'controller_'.str_replace(array('-', '.'), '_',$controller);
+		// Подцепляем файл с классом контроллера
+		$default_controller_path = "{$folder}/".strtolower($default_controller_name).'.php'; 
+		$controller_path = "{$folder}/".strtolower($controller_name).'.php'; 
+		if(file_exists($controller_path)){
+			require_once $controller_path;
+			if (class_exists($controller_name)){
+				$controller_obj = new $controller_name();
+				$this->runAction($controller_obj, $actions);
+				return true;
+			}	else { Route::ErrorPage404(); return false; }
+		}
+		elseif(file_exists($default_controller_path)){
+			$controller_path = $default_controller_path;
+			$controller_name = $default_controller_name;
+			require_once $controller_path;
+			if (class_exists($controller_name)){
+				$controller_obj = new $controller_name();
+				$this->runAction($controller_obj, $routes);
+				return true;
+			}	else { Route::ErrorPage404();  return false; } 
+		}
+		else {
+			Route::ErrorPage404(); 
+			return false;
+		}
+		}
+		else {
+			$REQUEST_URI = Registry::get('REQUEST_URI');
+			if(empty($routes)){
+				$default_controller_name = 'controller_index';
+				$default_controller_path = "{$folder}/".strtolower($default_controller_name).'.php'; 
+				require_once $default_controller_path;
+				if (class_exists($default_controller_name)){
+					$controller_obj = new $default_controller_name();
+					$this->runAction($controller_obj, array());
+					return true;
+				}	else { Route::ErrorPage404();  return false; } 
+			} 
+			else { 
+				$actions=[];
+				if(!empty($routes)){
+					foreach ($routes as $i => $route){
+						if($i == 0) { $controller = $route; 	Registry::set('controller', $controller);}
+						else { $actions[]=$route;}
+					}
+				} else { $controller="index"; }
+				$controller_name = 'controller_'.str_replace(array('-', '.'), '_',$controller);
+				$controller_path = "{$folder}/".strtolower($controller_name).'.php'; 
+				if(file_exists($controller_path)){
+					require_once $controller_path;
+					if (class_exists($controller_name)){
+						$controller_obj = new $controller_name();
+						$this->runAction($controller_obj, $actions);
+						return true;
+					}	else { Route::ErrorPage404(); return false; }
+				}
+			}
+		}
+		
+	}
+	
+	private function runAction($controller, $actions, $params=array()){
+		if(!empty($actions)){
+			$action_name = 'action_'.str_replace(array('-', '.'), '_',implode('_', $actions));
+			if(method_exists($controller, $action_name)){
+				call_user_func_array(array($controller, $action_name), array($params));
+			} else {
+				$param = array_pop($actions);
+				array_unshift($params, $param);
+				$this->runAction($controller, $actions, $params);
+			}
+		}
+		elseif(method_exists($controller, 'action_index')) {
+			call_user_func_array(array($controller, 'action_index'), array($params));
+		}
+		else Route::ErrorPage404();
 	}
 	
 	public static function ErrorPage404()

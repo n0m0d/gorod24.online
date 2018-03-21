@@ -28,8 +28,10 @@
 				?>
 			</div>
 			<div class="sectright">
-
-			<div class="sectright-breadcrumbs">
+			
+			<h2 style="display:inline-block; margin-right:25px;"><?=$this->data['header']?></h2>
+			
+			<div class="sectright-breadcrumbs" style="display:inline-block;">
 				<?php
 				$breadcrumbs_last_templ = new Template('<p>{#name#}<p>');
 				$breadcrumbs_templ = new Template('<a href="{#breadcrumb.href#}" class="ajax-load" data-center="false">{#breadcrumb.name#}</a><span><i class="fa fa-angle-right" aria-hidden="true"></i></span>');
@@ -48,7 +50,7 @@
 				}
 				?>
 			</div>
-				<h2><?=$this->data['header']?></h2>
+				
 				<div class="sectright-table">
 				<?=$this->data['content']?>
 				</div>

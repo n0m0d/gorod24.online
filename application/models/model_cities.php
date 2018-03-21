@@ -18,7 +18,8 @@ class model_cities extends Model
 				'city_area' => "VARCHAR(200) NULL DEFAULT NULL",
 				'city_region' => "VARCHAR(200) NULL DEFAULT NULL",
 				'url' => "VARCHAR(200) NULL DEFAULT NULL",
-				'status' => "INT(11) NOT NULL DEFAULT 0",				),
+				'status' => "INT(11) NOT NULL DEFAULT 0",
+				'in_news' => "INT(11) NULL DEFAULT NULL",				),
 			"index" => array(
 				
 			),

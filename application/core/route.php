@@ -41,33 +41,28 @@ class Route
 		Registry::set('REQUEST_URI', $REQUEST_URI);
 		
 		$routes = explode('/', urldecode($REQUEST_URI));
-		$routes = array_filter($routes,function($el){ return !empty($el);});
+		$routes = array_filter($routes,function($el){ return ($el=='')?false:true;});
 		$newroutes=array();
 		foreach ($routes as $i => $route){$newroutes[]=$route;}
 		$routes = $newroutes; $actions=[];
+		
 		foreach ($routes as $i => $route){
 			if($i == 0) { $controller = $route; 	Registry::set('controller', $controller);}
 			else { $actions[]=$route;}
 		}
-		$controller_name = 'controller_'.str_replace(array('-', '.'), '_',$controller);
-				
-		// Подцепляем файл с классом контроллера
-		$controller_path = APPDIR."/application/controllers/".strtolower($controller_name).'.php'; 
-		// Если файл контроллера существует, значит его подключаем и определяем. что страница является статической
-		if(file_exists($controller_path)){
-			require_once $controller_path;
-			if (class_exists($controller_name)){
-				$controller_obj = new $controller_name();
-				$this->runAction($controller_obj, $actions);
-			}	else Route::ErrorPage404(); 
+		
+		if(self::checkControllerFolder(APPDIR."/application/controllers", $routes)){
+			//Поиск контроллера начиная с корнеаого каталога, если контроллер ненайден, то вернет false и продолжит выполнение скрипта.
 		}
 		elseif(is_registered_controller($controller)) {
+			//Поиск контроллера в плагинах, если контроллер ненайден, то вернет false и продолжит выполнение скрипта.
 			render_controller($controller, $routes); 
 		}		
 		elseif(is_registered_page(urldecode($REQUEST_URI))) {
+			//Поиск страницы в плагинах, если контроллер ненайден, то вернет false и продолжит выполнение скрипта.
 			render_page(urldecode($REQUEST_URI)); 
 		}		
-		// Если файл контроллера отсутствует подключаем файл контроллера динамических страниц, который отвечает за поиск диначеской страници в БД
+		// Если файл контроллера отсутствует подключаем файл index контроллера, и запускаем поиск диначеской страници в БД
 		else{
 			if(!empty($REQUEST_URI)){
 			$model_posts = new model_posts();
@@ -79,6 +74,95 @@ class Route
 			else Route::ErrorPage404(); 
 			} else Route::ErrorPage404(); 
 		}
+	}
+	
+	private function checkControllerFolder($folder, $routes=array())	{
+		$new_routes = $routes;
+		if(!empty($routes)){
+		foreach($routes as $i=>$route){
+			if(is_dir("{$folder}/{$route}")){
+				array_shift($new_routes);
+				return self::checkControllerFolder("{$folder}/{$route}", $new_routes);
+			}
+			else {
+				return self::runControllerFolder("{$folder}", $new_routes);
+			}
+		}}
+		else {
+			return self::runControllerFolder("{$folder}", $new_routes);
+		}
+		return true;
+	}
+	
+	private function runControllerFolder($folder, $routes=array())	{
+		if($folder!=APPDIR."/application/controllers"){
+		$actions=[];
+		if(!empty($routes)){
+			foreach ($routes as $i => $route){
+				if($i == 0) { $controller = $route; 	Registry::set('controller', $controller);}
+				else { $actions[]=$route;}
+			}
+		} else { $controller="index"; }
+		$default_controller_name = 'controller_index';
+		$controller_name = 'controller_'.str_replace(array('-', '.'), '_',$controller);
+		// Подцепляем файл с классом контроллера
+		$default_controller_path = "{$folder}/".strtolower($default_controller_name).'.php'; 
+		$controller_path = "{$folder}/".strtolower($controller_name).'.php'; 
+		if(file_exists($controller_path)){
+			require_once $controller_path;
+			if (class_exists($controller_name)){
+				$controller_obj = new $controller_name();
+				$this->runAction($controller_obj, $actions);
+				return true;
+			}	else { Route::ErrorPage404(); return false; }
+		}
+		elseif(file_exists($default_controller_path)){
+			$controller_path = $default_controller_path;
+			$controller_name = $default_controller_name;
+			require_once $controller_path;
+			if (class_exists($controller_name)){
+				$controller_obj = new $controller_name();
+				$this->runAction($controller_obj, $routes);
+				return true;
+			}	else { Route::ErrorPage404();  return false; } 
+		}
+		else {
+			Route::ErrorPage404(); 
+			return false;
+		}
+		}
+		else {
+			$REQUEST_URI = Registry::get('REQUEST_URI');
+			if(empty($routes)){
+				$default_controller_name = 'controller_index';
+				$default_controller_path = "{$folder}/".strtolower($default_controller_name).'.php'; 
+				require_once $default_controller_path;
+				if (class_exists($default_controller_name)){
+					$controller_obj = new $default_controller_name();
+					$this->runAction($controller_obj, array());
+					return true;
+				}	else { Route::ErrorPage404();  return false; } 
+			} else { 
+				$actions=[];
+				if(!empty($routes)){
+					foreach ($routes as $i => $route){
+						if($i == 0) { $controller = $route; 	Registry::set('controller', $controller);}
+						else { $actions[]=$route;}
+					}
+				} else { $controller="index"; }
+				$controller_name = 'controller_'.str_replace(array('-', '.'), '_',$controller);
+				$controller_path = "{$folder}/".strtolower($controller_name).'.php'; 
+				if(file_exists($controller_path)){
+					require_once $controller_path;
+					if (class_exists($controller_name)){
+						$controller_obj = new $controller_name();
+						$this->runAction($controller_obj, $actions);
+						return true;
+					}	else { Route::ErrorPage404(); return false; }
+				}
+			}
+		}
+		
 	}
 	
 	private function runAction($controller, $actions, $params=array()){
@@ -122,7 +206,7 @@ class Route
 		session_start();
 		$id_session = session_id();
 		setcookie('session_id', $id_session, 0, '/');
-		
+		/*
 			$session_time_left = $_SESSION['session_time'] - $_SESSION['session_start_time'];
 			Registry::set("session_time_left", $session_time_left);
 		if($_SESSION['session_time'] == time()) {
@@ -136,6 +220,7 @@ class Route
 		} else { $_SESSION['session_conn_count'] = 0; }
 		if(!$_SESSION['session_start_time']) 	$_SESSION['session_start_time'] = time(); 	//Время начала сессии
 												$_SESSION['session_time'] = time();			//Текуущее время сессии
+		*/
 	}
 	
 }

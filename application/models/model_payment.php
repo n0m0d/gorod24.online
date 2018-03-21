@@ -583,8 +583,12 @@ class model_payment extends Model
         return false;
     }
 	
-	public function getPaymentPackages($for='adv', $sub_cat=null){
-		$packages = $this->packages()->getItemsWhere("`on_off`='1' AND `package_for` LIKE '%;{$for};%'", '`sort`, `id`');
+	public function getPaymentPackages($for='adv', $sub_cat=null, $simple=false){
+		$ignore = [1,2];
+		if(!$simple){
+			array_push($ignore, 15,16,17,18 );
+		}
+		$packages = $this->packages()->getItemsWhere("`on_off`='1' AND `package_for` LIKE '%;{$for};%' AND id NOT IN (".implode(',',$ignore).")", '`sort`, `id`');
 		$array = [];
 		foreach($packages as $i => $row){
 			if(!$array[$row['name']]){ $array[$row['name']] = [ 'name'=>$row['name'], 'title'=>$row['title'], 'title'=>$row['title'], 'descr'=>$row['descr'], 'items'=>[] ]; }

@@ -14,6 +14,7 @@ class model_uploads extends Model
 			"autoinit"  => false,
             "columns" => array(
 				'name' => "varchar(200) NOT NULL DEFAULT ''",
+				'original_name' => "varchar(255) NOT NULL DEFAULT ''",
 				'ext' => "varchar(10) NOT NULL DEFAULT ''",
 				'type' => "varchar(10) NOT NULL DEFAULT ''",
 				'size' => "int(11) NULL DEFAULT NULL",

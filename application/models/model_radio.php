@@ -14,7 +14,7 @@ class model_radio extends Model
 	function __construct($config = array()) {
 		$config = [
             "server" => "radio",
-            "database" => "gsp1.feomedia.ru",
+            "database" => "feo.fm",
             "prefix" => "radio_",
             "name" => "projects",
             "engine" => "MyISAM",
@@ -50,7 +50,7 @@ class model_radio extends Model
 		
 		$program_category_config = [
             "server" => "radio",
-            "database" => "gsp1.feomedia.ru",
+            "database" => "feo.fm",
             "prefix" => "radio_",
             "name" => "program_category",
             "engine" => "MyISAM",
@@ -77,7 +77,7 @@ class model_radio extends Model
 		
 		$programs_config = [
             "server" => "radio",
-            "database" => "gsp1.feomedia.ru",
+            "database" => "feo.fm",
             "prefix" => "radio_",
             "name" => "program",
             "engine" => "MyISAM",
@@ -112,7 +112,7 @@ class model_radio extends Model
 		
 		$questions_config = [
             "server" => "radio",
-            "database" => "gsp1.feomedia.ru",
+            "database" => "feo.fm",
             "prefix" => "radio_",
             "name" => "questions",
             "engine" => "MyISAM",
@@ -146,17 +146,32 @@ class model_radio extends Model
 	}
 	
 	public function getAudioStream($city_id, $user_id=null, $access_token=null){
-		$result = $this->get("audio_stream")->from($this)->where("`city_id`={$city_id} and `status`=1")->commit('one');
+		$result = $this->get("audio_stream as stream")->from($this)->where("`city_id`={$city_id} and `status`=1")->commit('row');
 		return $result;
 	}
 	
 	public function getProgramRubrics($city_id, $user_id=null, $access_token=null){
-		$result = $this->program_category->get("*")->from($this->program_category)->commit('all');
+		$result = $this->program_category->get("id, name")->from($this->program_category)->where("`status`=1 AND (SELECT COUNT(*) FROM `{$this->programs->getdatabasename()}`.`{$this->programs->gettablename()}` as `pr` WHERE `pr`.`cat_id`=`{$this->program_category->gettablename()}`.`id`)>0")->commit('all');
 		return $result;
 	}
 	
-	public function getPrograms($city_id, $rubric_id, $start=0, $limit=20, $user_id=null, $access_token=null){
-		$result = $this->programs->get("name, descr, link, img, date_pub as date")->from($this->programs)->where("`cat_id`={$rubric_id}")->offset($start)->limit($limit)->commit('all');
+	public function getPrograms($city_id, $filters, $start=0, $limit=20, $user_id=null, $access_token=null){
+		$rubric_id = $filters['rubric'];
+		$date = $filters['date'];
+		$where = '`status` = 1';
+		if(!empty($rubric_id)){
+			$where .= " AND `cat_id`={$rubric_id}";
+		}
+		if(!empty($date)){
+			$where .= " AND date(`date_pub`)='{$date}'";
+		}
+		$result = $this->programs->get("name, descr, concat('https://feo.fm/', `link`) as link, concat('https://feo.fm/', `img`) as img, date_pub as date")
+		->from($this->programs)
+		->where($where)
+		->offset($start)
+		->limit($limit)
+		->order("date_pub DESC, id DESC")
+		->commit('all');
 		return $result;
 	}
 	
@@ -166,7 +181,7 @@ class model_radio extends Model
 		if($user_id){
 			$check = $this->questions->getCountWhere("`uid` = {$user_id} AND `time`>'{$time}'", "time");
 			if($check>0){
-				return ["error"=>1, "message"=>"Already sent today"];
+				return ["error"=>1, "message"=>"Вы уже отправляли сообщение сегодня"];
 			}
 			else {
 				$this->questions->Insert([
@@ -178,13 +193,13 @@ class model_radio extends Model
 					'date' => date("y-m-d H:i:s"),
 					'time' => time(),
 				]);
-				return ["succes"=>1, "message"=>"Message sended"];
+				return ["succes"=>1, "message"=>"Сообщение отправлено"];
 			}
 		}
 		else {
 			$check = $this->questions->getCountWhere("`ip` = '{$ip}' AND `time`>'{$time}'", "time");
 			if($check>0){
-				return ["error"=>1, "message"=>"Already sent today"];
+				return ["error"=>1, "message"=>"Вы уже отправляли сообщение сегодня"];
 			}
 			else {
 				$this->questions->Insert([
@@ -196,7 +211,7 @@ class model_radio extends Model
 					'date' => date("y-m-d H:i:s"),
 					'time' => time(),
 				]);
-				return ["succes"=>1, "message"=>"Message sended"];
+				return ["succes"=>1, "message"=>"Сообщение отправлено"];
 			}
 		}
 	}

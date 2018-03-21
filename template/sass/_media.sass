@@ -1,0 +1,462 @@
+@import "bourbon"
+@import "vars"
+
+/*==========  Desktop First  ==========*/
+@media only screen and (max-width : 1300px)
+	.container
+		padding-left: 10px
+		padding-right: 10px
+
+	.nps
+		padding-left: 0
+		padding-right: 0
+
+	.main-index
+		.section-1
+			.left-slider-col
+				padding-left: 0
+			.right-slider-col
+				padding-right: 0
+
+/* Large Devices, Wide Screens */
+@media only screen and (max-width : 1200px)
+	/**/
+	.main-header
+		.main-wrap
+			.sect-1
+				width: 19%
+			.sect-2
+				width: 17%
+			.sect-3
+				width: 29%
+			.sect-4
+				width: 35%
+
+	.news-block-horizontale
+		.news-item
+			.content
+				.news-descr
+					max-height: 50px
+					span
+						font-size: 20px
+						line-height: 25px
+
+	.main-news
+		.section-1
+			.left-slider-col
+				.main-slider
+					.descr
+						h1
+							max-width: 450px
+						.time
+							.icon-clock
+								display: none
+
+	.ads-block-horizontale
+		.ads-item-wrap
+			.content
+				.item-foot
+					.location
+						.icon-location-pin
+							display: none
+					.time
+						.icon-clock
+							display: none
+
+@media only screen and (max-width : 1050px)
+	.main-header
+		.main-wrap
+			.sect-1
+				width: 25%
+			.sect-2
+				width: 25%
+			.sect-3
+				display: none
+				.items-wrap
+					display: none
+			.sect-4
+				width: 50%
+				.items-wrap
+					display: block
+
+/* Medium Devices, Desktops */
+@media only screen and (max-width : 991px)
+	/**/
+	.main-header
+		.main-wrap
+			.sect-1
+				width: 30%
+			.sect-2
+				width: 30%
+			.sect-3
+				display: none
+			.sect-4
+				width: 40%
+
+	//Уменьшаем шрифт
+	.info-block-verticale
+		.info-item
+			.content
+				.info-descr
+					span
+						font-size: 20px
+
+	.slider-style-2
+		.slick-list
+			.item
+				.descr
+					.title
+						font-size: 17px
+						line-height: 22px
+
+	//Ротация вертикального блока в горизонтальный
+	.info-block-horizontale
+		font-size: 0
+		.info-item
+			background-color: #FFF
+			margin-bottom: 0
+			.img-wrap
+				display: inline-block
+				width: 100%
+				overflow: hidden
+				max-height: 168px
+				img
+					width: 100%
+			.content
+				display: inline-block
+				padding: 15px
+				.tags
+					font-size: 0
+					a
+						margin-right: 5px
+						color: $red
+						font-size: 12px
+						line-height: 17px
+						text-transform: uppercase
+						&:last-child
+							margin-right: 0
+				.info-descr
+					max-height: 86px
+					overflow: hidden
+					margin: 15px 0
+					display: block
+					text-decoration: none
+					span
+						color: #2e2e2e
+						font-size: 20px
+						line-height: 29px
+						font-family: "Minion-Regular"
+				.time
+					display: inline-block
+					.text-clock
+						font-size: 12px
+						line-height: 17px
+						color: $accent
+						display: inline-block
+						vertical-align: bottom
+					.icon-clock
+						color: $accent
+						font-size: 16px
+						line-height: 17px
+						display: inline-block
+						vertical-align: bottom
+						margin-right: 5px
+				.views
+					display: inline-block
+					float: right
+					.text-views
+						font-size: 12px
+						line-height: 17px
+						color: $accent
+						display: inline-block
+						vertical-align: bottom
+					.icon-eye
+						color: $accent
+						font-size: 16px
+						line-height: 17px
+						display: inline-block
+						vertical-align: bottom
+						margin-right: 5px
+			&:last-child
+				margin-bottom: 0
+
+	.main-news
+		.section-1
+			.left-slider-col
+				.main-slider
+					.descr
+						.time
+							.icon-clock
+								display: inline-block
+
+	.ads-block-horizontale
+		.ads-item-wrap
+			.content
+				.item-foot
+					.location
+						.icon-location-pin
+							display: inline-block
+					.time
+						.icon-clock
+							display: inline-block
+
+	.block-sticker-wrap
+		.yellow-box
+			margin-bottom: 0
+
+	.yellow-box
+		.yellow-content
+			.item
+				margin-bottom: 0
+				padding-bottom: 0
+				border-bottom: 0
+	.main-footer
+		.main-wrap-in
+			.footer-block
+				.logo-wrap
+					text-align: center
+				.copy
+					text-align: center
+
+/* Small Devices, Tablets */
+@media only screen and (max-width : 767px)
+	/**/
+
+	h1
+		font-size: 24px
+		line-height: 29px
+
+	h2
+		font-size: 18px
+		line-height: 23px
+
+	.main-header
+		.main-wrap
+			.sect-1
+				display: block
+				width: 100%
+				text-align: center
+				.logo-wrap
+					display: inline-block
+			.sect-2
+				width: 45%
+				text-align: center
+				.auth-wrap
+					display: none
+				.location-wrap
+					display: inline-block
+			.sect-3
+				width: 55%
+				display: inline-block
+				text-align: center
+				.add-listing
+					display: none
+				.items-wrap
+					display: inline-block
+					.item
+						padding-left: 0
+						margin-bottom: 5px
+			.sect-4
+				display: none
+			.main-menu
+				margin-top: 20px
+				max-height: 100vh
+				overflow-y: scroll
+
+	.info-block-horizontale
+		font-size: 0
+		.info-item
+			background-color: #FFF
+			margin-bottom: 20px
+
+	.slider-style-2
+		.slick-list
+			.item
+				.descr
+					.title
+						font-size: 16px
+						line-height: 21px
+	.main-index, .main-news
+		.section-1
+			.right-slider-col
+				margin-top: 0
+			.left-slider-col
+				.main-slider
+					.descr
+						padding-bottom: 10px
+						padding-top: 10px
+						h1
+							font-size: 18px
+							line-height: 23px
+							max-width: 300px
+						.time
+							line-height: 25px
+
+	.section-2
+		.info-item-wrap
+			margin-bottom: 20px
+			&:last-child
+				margin-bottom: 0
+
+	.main-news
+		.section-1
+			.info-block-verticale
+				margin-bottom: 20px
+		.section-2 
+			.info-item-wrap
+				margin-top: 0
+
+	.ads-block-horizontale
+		.ads-item-wrap
+			.img-wrap
+				img
+					width: 100%
+					height: auto
+			.content
+				padding: 10px
+				.item-title
+					a
+						font-size: 14px
+						line-height: 19px
+				.item-content
+					border: 0
+					.price
+						font-size: 14px
+						line-height: 19px
+	.main-news-page
+		.section-1
+			.news-today
+				padding: 10px
+			.post-wrap
+				padding: 10px
+			.comments-wrap
+				padding: 10px
+				.ava-wrap
+					width: 40px
+					height: 40px
+					img
+						width: 40px
+						height: 40px
+				.add-comment
+					.left-col
+						width: 20%
+					.right-col
+						width: 80%
+				.comments
+					.comment
+						.left-col
+							width: 20%
+						.right-col
+							width: 80%
+							.user-comment
+								.head
+									height: 17px
+									.name
+										font-size: 12px
+										line-height: 17px
+									.time
+										font-size: 12px
+										line-height: 17px
+								.content
+									p
+										font-size: 13px
+										line-height: 18px
+								.foot
+									height: 17px
+									.review
+										a
+											font-size: 12px
+											line-height: 17px
+									.likes
+										span
+											line-height: 17px
+										.icon-like
+											font-size: 17px
+										.text-like
+											font-size: 12px
+					.review
+						.left-col
+							width: 30%
+						.right-col
+							width: 70%
+
+	.main-firm
+		.firm-content-center-box
+			.firm-wrap
+				padding: 10px
+				ul
+					text-align: center
+
+	.main-footer
+		.main-wrap
+			.footer-block
+				display: block
+				float: left
+				width: 100%
+				text-align: center
+				.logo-wrap
+					display: inline-block
+				.bot-social
+					padding: 30px 0
+
+@media only screen and (max-width : 550px)
+	.main-ads-single-page
+		.ads-page-wrap
+			padding: 10px
+			.top-sect
+				h1
+					margin-bottom: 10px
+				.price
+					float: none
+					display: block
+/* Extra Small Devices, Phones */
+@media only screen and (max-width : 479px)
+	/**/
+	.main-ads-page
+		.ads-cat
+			.col-block-1, .col-block-2, .col-block-3
+				.item-wrap
+					margin-left: 0
+
+	.main-ads-single-page
+		.ads-page-wrap
+			.top-sect
+				.price
+					float: none
+					display: block
+			.bottom-sect
+				.time
+					display: block
+					margin-bottom: 10px
+
+/* Custom, iPhone Retina */
+@media only screen and (max-width : 319px)
+	/**/
+
+
+/*==========  Mobile First  ==========*/
+
+/* Custom, iPhone Retina */
+@media only screen and (min-width : 320px)
+	/**/
+
+
+/* Extra Small Devices, Phones */
+@media only screen and (min-width : 480px)
+	/**/
+
+
+/* Small Devices, Tablets */
+@media only screen and (min-width : 768px)
+	/**/
+
+
+/* Medium Devices, Desktops */
+@media only screen and (min-width : 992px)
+	/**/
+
+
+/* Large Devices, Wide Screens */
+@media only screen and (min-width : 1200px)
+	/**/
+

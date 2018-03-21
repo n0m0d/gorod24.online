@@ -1,0 +1,425 @@
+@import "bourbon"
+@import "fonts"
+@import "libs"
+@import "vars"
+
+*::-webkit-input-placeholder
+	color: #666
+	opacity: 1
+
+*:-moz-placeholder
+	color: #666
+	opacity: 1
+
+*::-moz-placeholder
+	color: #666
+	opacity: 1
+
+*:-ms-input-placeholder
+	color: #666
+	opacity: 1
+
+body input:focus:required:invalid,
+body textarea:focus:required:invalid
+	color: #666
+body input:required:valid,
+body textarea:required:valid
+	color: #666
+
+body
+	font-size: 16px
+	min-width: 320px
+	position: relative
+	line-height: 1.75
+	font-family: $default-font
+	overflow-x: hidden
+
+.img-responsive
+	display: block
+	max-width: 100%
+	height: auto
+
+.button-wrap
+	display: block
+	padding-bottom: 50px
+	.button
+		display: inline-block
+		font-size: 14px
+		font-weight: bold
+		text-transform: uppercase
+		color: #000
+		background-color: $accent
+		border: none
+		text-decoration: none
+		outline: none
+		padding: 10px 20px
+		border-radius: .15em
+		transition: all .25s ease
+		&:hover
+			background-color: #d39e00
+
+h1
+	color: #e30513
+	font-size: 64px
+	line-height: 69px
+	font-family: "impact"
+	text-align: center
+	margin: 0
+	span
+		color: #0075bf
+
+h2
+	color: #fff
+	text-transform: uppercase
+	font-family: "intro"
+	font-size: 40px
+	line-height: 45px
+	margin-top: 140px
+	margin-bottom: 35px
+
+h3
+	color: #000
+	font-size: 20px
+	line-height: 25px
+	margin: 0
+	padding: 35px 0 10px 0
+
+//Мобильное меню
+.toggle-menu
+	display: inline-block
+	vertical-align: middle
+	width: 30px
+	height: 15px
+	margin: 30px 15px 20px
+	float: right
+
+.toggle-menu span:after,
+.toggle-menu span:before
+	content: ""
+	position: absolute
+	left: 0
+	top: -9px
+
+.toggle-menu span:after
+	top: 9px
+
+.toggle-menu span
+	position: relative
+	display: block
+
+.toggle-menu span,
+.toggle-menu span:after,
+.toggle-menu span:before
+	width: 100%
+	height: 5px
+	background-color: #322885
+	transition: all 0.3s
+	backface-visibility: hidden
+	border-radius: 2px
+
+.toggle-menu.on span
+	background-color: transparent
+
+.toggle-menu.on span:before
+	transform: rotate(45deg) translate(5px, 5px)
+
+.toggle-menu.on span:after
+	transform: rotate(-45deg) translate(7px, -8px)
+
+.toggle-menu.on + #menu
+	opacity: 1
+	visibility: visible
+
+//Шапка сайта
+.main-header
+	background-color: #FFF
+	.container-wrap
+		.logo-wrap
+			display: inline-block
+			a
+				display: inline-block
+				line-height: 75px
+		.menu-wrap
+			text-align: right
+			display: inline-block
+			position: absolute
+			right: 0
+			.main-menu
+				display: inline-block
+				ul
+					text-align: left
+					padding: 0
+					margin: 0
+					list-style-type: none
+					font-size: 0
+					li
+						display: inline-block
+						margin: 0 20px
+						border-top: 3px solid transparent
+						transition: all .25s ease
+						font-size: 16px
+						a
+							color: #000
+							text-decoration: none
+							line-height: 75px
+						&:first-child
+							margin-left: 0
+						&:last-child
+							margin-right: 0
+						&:hover
+							border-color: #db0709
+		.main-mobile-menu
+			background-color: #fff
+			padding-bottom: 15px
+			.toggle-mobile-menu
+				display: none
+				background-color: #F8F8F8
+				padding: 0
+				margin: 0
+				width: 100%
+				border: 1px solid #ddd
+				border-top: none
+				li
+					list-style-type: none
+					padding: 0 10px
+					display: block
+					a
+						text-decoration: none
+						color: #646464
+						font-size: 16px
+						display: block
+						line-height: 36px
+						&:hover
+							color: #322885
+					&:hover
+						background-color: #FFF
+						&:before
+							border-top-color: #322885
+
+.section-1, .section-2, .section-3, .section-4, .section-5
+	background-image: url("../img/triangles.png")
+	background-repeat: no-repeat
+	background-position: center center
+	.container-wrap
+		.phone-img-wrap
+			overflow: hidden
+			text-align: center
+			padding: 55px 0 70px 0
+			img
+				display: inline-block
+
+//Первая сеция
+.section-1
+	background-color: #322885
+	.container-wrap
+		.top-text
+			color: #8581af
+			margin-bottom: 35px
+			margin-top: 0
+			line-height: 21px
+			max-width: 440px
+		.bot-text
+			color: #fff
+			font-size: 14px
+			line-height: 19px
+			margin-bottom: 25px
+			margin-top: 0
+			max-width: 270px
+		.form-wrap
+			font-size: 0
+			form
+				.input-wrap
+					.one-input
+						display: inline-block
+						vertical-align: top
+						margin-right: 20px
+						margin-left: 1px
+						margin-bottom: 10px
+						label
+							input
+								width: 100%
+								max-width: 195px
+								padding: 10px 10px
+								border: none
+								border-radius: .15em
+								display: block
+								font-size: 14px
+					&:before
+						font-size: 14px
+						content: ''
+						display: inline-block
+						width: 44.5px
+						height: 44.5px
+						background-color: #FFF
+						background-image: url("../img/phone-icon.png")
+						background-repeat: no-repeat
+						background-position: center center
+						border-radius: .15em
+						vertical-align: center
+					.button-wrap
+						display: inline-block
+						vertical-align: top
+
+//Вторая секция
+.section-2
+	background-color: #b4585a
+	.container-wrap
+		.top-text
+			color: #fff
+			margin-bottom: 35px
+			margin-top: 0
+			line-height: 21px
+			max-width: 485px
+		.bot-text
+			color: #fff
+			font-size: 20px
+			line-height: 25px
+			margin-bottom: 25px
+			margin-top: 0
+			font-weight: bold
+
+//Третья секция
+.section-3
+	background-color: #92416a
+	.container-wrap
+		.top-text
+			color: #fff
+			margin-bottom: 35px
+			margin-top: 0
+			line-height: 21px
+
+//Четвёртая секция
+.section-4
+	background-color: #007ac7
+	.container-wrap
+		.top-text
+			color: #fff
+			margin-bottom: 35px
+			margin-top: 0
+			line-height: 21px
+			max-width: 600px
+
+//Пятая секция
+.section-5
+	background-color: #d27d2a
+	.container-wrap
+		.top-text
+			color: #fff
+			margin-bottom: 35px
+			margin-top: 0
+			line-height: 21px
+
+//Шестая секция
+.section-6
+	background-color: #fff
+	.container-wrap
+		.top-sect
+			text-align: center
+			padding: 80px 0 20px 0
+			.content
+				display: inline-block
+				font-size: 0
+				.img-wrap
+					display: inline-block
+					margin-right: 40px
+				h1
+					display: inline-block
+					vertical-align: middle
+		.bot-sect
+			text-align: center
+			.content
+				display: inline-block
+				max-width: 335px
+				padding-bottom: 85px
+				span
+					color: #000
+					font-size: 20px
+					line-height: 25px
+					text-align: left
+					display: inline-block
+
+//Седьмая секция
+.section-7
+	background-color: #f7f7f7
+	.container-wrap
+		text-align: center
+		.content
+			display: inline-block
+			padding-bottom: 80px
+			.img-wrap
+				padding: 80px 0 40px 0
+			.bot-text
+				color: #fff
+				font-size: 14px
+				line-height: 19px
+				margin-bottom: 25px
+				margin-top: 0
+				color: #000000
+			.form-wrap
+				font-size: 0
+				form
+					.input-wrap
+						.one-input
+							display: inline-block
+							vertical-align: top
+							margin-right: 20px
+							margin-left: 1px
+							margin-bottom: 10px
+							label
+								input
+									width: 100%
+									max-width: 195px
+									padding: 9px 10px
+									border: 1px solid #b5b5b5
+									border-radius: .15em
+									display: block
+									font-size: 14px
+						&:before
+							font-size: 14px
+							content: ''
+							display: inline-block
+							width: 44.5px
+							height: 44.5px
+							background-color: #FFF
+							background-image: url("../img/phone-icon-2.png")
+							background-repeat: no-repeat
+							background-position: center center
+							border-radius: .15em
+							vertical-align: center
+							border: 1px solid #b5b5b5
+						.button-wrap
+							display: inline-block
+							vertical-align: top
+
+//Подвал
+.main-footer
+	background-color: #fff
+	.container-wrap
+		text-align: center
+		.content
+			padding-bottom: 80px
+			h2
+				color: #000
+			ul
+				padding: 0
+				margin: 0
+				list-style-type: none
+				text-align: left
+				display: inline-block
+				li
+					color: #000
+					&:before
+						content: ''
+						display: inline-block
+						width: 7px
+						height: 7px
+						background-color: #db0709
+						border-radius: .5em
+						vertical-align: middle
+						margin-right: 10px
+			.desc-text
+				margin: 0
+				color: #000
+				line-height: 21px
+
+@import "media" // Всегда в конце

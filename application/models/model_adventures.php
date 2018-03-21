@@ -12,6 +12,11 @@ class model_adventures extends Model
 	protected $autoup_log; public function autoup_log(){ return $this->autoup_log; }
 	protected $up; public function up(){ return $this->up; }
 	protected $claim; public function claim(){ return $this->claim; }
+	protected $favourites; public function favourites(){ return $this->favourites; }
+	protected $model_gazeta; public function model_gazeta(){ return $this->model_gazeta; }
+	protected $model_gazeta_adv; public function model_gazeta_adv(){ return $this->model_gazeta_adv; }
+	protected $model_gazeta_nums; public function model_gazeta_nums(){ return $this->model_gazeta_nums; }
+	protected $monthes;
 	
 	function __construct($config = array()) {
 		$config = [
@@ -460,8 +465,9 @@ class model_adventures extends Model
             "primary_key" => "id",
 			"autoinit"  => false,
             'columns' => array(
-                'adv_id'    => "INT NOT NULL DEFAULT '0'",
-                'utx'       => "INT NOT NULL DEFAULT '0'"
+                'adv_id'    	=> "INT NOT NULL DEFAULT '0'",
+                'utx'       	=> "INT NOT NULL DEFAULT '0'",
+                'from_app'      => "INT NOT NULL DEFAULT '0'"
             ),
             'index' => array(
 			),
@@ -508,7 +514,166 @@ class model_adventures extends Model
             )
         );
 		$this->claim = new Model($claim_config);
+	    
+		$favourites_config = array(
+            "server" => "80.93.183.242",
+            "database" => "new_feo_ua",
+            "prefix" => "adv_",
+            "name" => "favourites",
+            "engine" => "InnoDB",
+            "version" => "1",
+            "row_format" => "Dynamic",
+            "collation" => "utf8_general_ci",
+            "primary_key" => "id",
+			"autoinit"  => false,
+            'columns' => array(
+                'adv_id'	=> "INT NOT NULL DEFAULT '0'",
+                'user_id'	=> "INT NOT NULL DEFAULT '0'",
+                'date'		=> "DATETIME NOT NULL DEFAULT '0000-00-00 00:00:00'",
+            ),
+            'index' => array(
+				'adv_iduser_id' => ['adv_id', 'user_id']
+			),
+            'unique'    => array(
+			),
+            'fulltext'  => array(),
+            'engine'    => 'InnoDB',
+            'revisions' => array(
+                array(
+                    'version'       => '1'
+                )
+            )
+        );
+		$this->favourites = new Model($favourites_config);
+	    
+		$gazeta_config = array(
+            "server" => "80.93.183.242",
+            "database" => "new_feo_ua",
+            "prefix" => "adv_",
+            "name" => "gazeta",
+            "engine" => "InnoDB",
+            "version" => "1",
+            "row_format" => "Dynamic",
+            "collation" => "utf8_general_ci",
+            "primary_key" => "id",
+			"autoinit"  => false,
+            'columns' => array(
+                'city_id'	=> "INT(11) NOT NULL DEFAULT '0'",
+                'title'		=> "TEXT NOT NULL DEFAULT ''",
+                'active'	=> "ENUM('0', '1') NOT NULL DEFAULT '1'",
+                'max_advs'	=> "INT(11) NOT NULL DEFAULT '200'",
+                'max_words'	=> "INT(11) NOT NULL DEFAULT '10'",
+                'max_chars'	=> "INT(11) NOT NULL DEFAULT '180'",
+				'info_text'	=> "TEXT NOT NULL DEFAULT ''",
+				'mail_text'	=> "TEXT NOT NULL DEFAULT ''",
+				'default'	=> "ENUM('0', '1') NOT NULL DEFAULT '0'",
+				'on_off'	=> "ENUM('0', '1') NOT NULL DEFAULT '1'",
+            ),
+            'index' => array(
+				'i_active' => ['active'],
+				'i_onoff' => ['on_off'],
+				'active_onoff' => ['active', 'on_off']
+			),
+            'unique'    => array(
+			),
+            'fulltext'  => array(),
+            'engine'    => 'InnoDB',
+            'revisions' => array(
+                array(
+                    'version'       => '1'
+                )
+            )
+        );
+		$this->model_gazeta = new Model($gazeta_config);
+	    
+		$gazeta_adv_config = array(
+            "server" => "80.93.183.242",
+            "database" => "new_feo_ua",
+            "prefix" => "adv_",
+            "name" => "gazeta_adv",
+            "engine" => "InnoDB",
+            "version" => "1",
+            "row_format" => "Dynamic",
+            "collation" => "utf8_general_ci",
+            "primary_key" => "id",
+			"autoinit"  => false,
+            'columns' => array(
+                'gazeta_id'	=> "INT(11) NOT NULL DEFAULT '0'",
+                'num_id'	=> "INT(11) NOT NULL DEFAULT '0'",
+                'adv_id'	=> "INT(11) NOT NULL DEFAULT '0'",
+				'published'	=> "ENUM('0', '1') NOT NULL DEFAULT '0'",
+            ),
+            'index' => array(
+				'fk_gazeta' => ['gazeta_id'],
+				'fk_num' => ['num_id'],
+				'fk_adv' => ['adv_id'],
+				'gazeta_num' => ['gazeta_id', 'num_id'],
+				'gazeta_num_adv' => ['gazeta_id', 'num_id', 'adv_id'],
+				'i_published' => ['published'],
+			),
+            'unique'    => array(
+			),
+            'fulltext'  => array(),
+            'engine'    => 'InnoDB',
+            'revisions' => array(
+                array(
+                    'version'       => '1'
+                )
+            )
+        );
+		$this->model_gazeta_adv = new Model($gazeta_adv_config);
+	    
+		$gazeta_nums_config = array(
+            "server" => "80.93.183.242",
+            "database" => "new_feo_ua",
+            "prefix" => "adv_",
+            "name" => "gazeta_nums",
+            "engine" => "InnoDB",
+            "version" => "1",
+            "row_format" => "Dynamic",
+            "collation" => "utf8_general_ci",
+            "primary_key" => "id",
+			"autoinit"  => false,
+            'columns' => array(
+                'pid'	=> "INT(11) NOT NULL DEFAULT '0'",
+                'num'	=> "INT(11) NOT NULL DEFAULT '0'",
+                'date'	=> "DATE NOT NULL DEFAULT '0000-00-00'",
+                'stop_date'	=> "DATE NOT NULL DEFAULT '0000-00-00'",
+                'year'	=> "INT(11) NOT NULL DEFAULT '0'",
+                'limit'	=> "INT(11) NOT NULL DEFAULT '0'",
+                'plan'	=> "INT(11) NOT NULL DEFAULT '0'",
+				'on_off'	=> "ENUM('0', '1') NOT NULL DEFAULT '0'",
+            ),
+            'index' => array(
+				'fk_pid' => ['pid'],
+				'fk_stopdate' => ['stop_date'],
+				'onoff' => ['on_off'],
+				'pid_onoff' => ['pid', 'on_off'],
+				'i_year' => ['year'],
+			),
+            'unique'    => array(
+			),
+            'fulltext'  => array(),
+            'engine'    => 'InnoDB',
+            'revisions' => array(
+                array(
+                    'version'       => '1'
+                )
+            )
+        );
+		$this->model_gazeta_nums = new Model($gazeta_nums_config);
 		
+		$this->monthes=array(
+				1 => 'января', 2 => 'февраля', 3 => 'марта', 4 => 'апреля',
+				5 => 'мая', 6 => 'июня', 7 => 'июля', 8 => 'августа',
+				9 => 'сентября', 10 => 'октября', 11 => 'ноября', 12 => 'декабря'
+			);
+		$this->monthes=array(
+				1 => 'янв', 2 => 'фев', 3 => 'марта', 4 => 'апр',
+				5 => 'мая', 6 => 'июня', 7 => 'июля', 8 => 'авг',
+				9 => 'сен', 10 => 'окт', 11 => 'нояб', 12 => 'дек'
+			);
+			
 	}
 	
     /**
@@ -517,6 +682,7 @@ class model_adventures extends Model
      */
     public function AdvToOn($adv_id) {
         if (is_numeric($adv_id)) {
+			
             $query = "DELETE FROM `{$this->getdatabasename()}`.`{$this->gettablename()}` WHERE `id`='{$adv_id}' LIMIT 1;";
             $this->db()->query($query);
             $query = "
@@ -531,7 +697,16 @@ class model_adventures extends Model
                 ";
             $this->db()->query($query);
 			$this->ParseNewOption(null, $adv_id);
-			return true;
+			
+			$adv = $this->findItem($adv_id);
+			$limits = $this->getLimits($adv_id, $adv['user_id']);
+			if($limits['portal']['answer']){
+				return [ 'success'=>1, 'message'=>'Объявление включено' ];
+			}
+			else {
+				$this->AdvToPay($adv_id);
+				return [ 'success'=>1, 'message'=>'ВНИМАНИЕ! Вы превысили лимит бесплатных объявлений. Объявление помечено как ожидающее оплату. Вы можете выполнить платное поднятие и объявление появится в списке.' ];
+			}
         }
 		else return false;
     }
@@ -560,31 +735,57 @@ class model_adventures extends Model
                     `{$this->getdatabasename()}`.`{$this->gettablename()}` WHERE `id`='{$adv_id}' LIMIT 1;
                 ";
             $this->db()->query($query);
-			return true;
+			return [ 'success'=>1, 'message'=>'Объявление выключено' ];
         }
 		else return false;
     }
 	
-    public function AdvToUp($adv_id, $up_max_time=0, $force=false) {
+    public function AdvToUp($adv_id, $up_max_time=0, $force=false, $checkLimits=true) {
         $can_up = true;
-        $last_up = $this->up()->getItemWhere("`adv_id`='{$adv_id}'");
-        if (is_array($last_up)) {
+        $adv = $this->findItem($adv_id);
+	    $last_up = $this->up()->getItemWhere("`adv_id`='{$adv_id}'");
+		/*
+		if (is_array($last_up)) {
             if (($last_up['utx']+$up_max_time)>time()) {
                 $can_up = false;
             }
         }
+		*/
+        if (!empty($adv['is_on'])) {
+            if (($adv['date']+$up_max_time)>time()) {
+                $can_up = false;
+            }
+			
+        }
+		else {
+			return [ 'error'=>1, 'message'=>'Объявление выключено. Сначала включите его, а потом выполните поднятие.'];;
+		}
+		
         if ($can_up or $force) {
-            $adv_up = array(
-                'id'            => $adv_id,
-                'up_time'       => time(),
-                'up_time_send'  => time()
-            );
-            $this->Update($adv_up,$adv_up['id']);
-            $up_data = array(
-                'adv_id'    => $adv_id,
-                'utx'       => time()
-            );
-            $this->up()->InsertUpdate($up_data);
+			if($adv){
+				$limits = $this->getLimits($adv_id, $adv['user_id']);
+				if(!$checkLimits) $limits['portal']['answer'] = true;
+				if($limits['portal']['answer']){
+					$adv_up = array(
+						'id'            => $adv_id,
+						'up_time'       => time(),
+						'up_time_send'  => time()
+					);
+					$this->Update($adv_up,$adv_up['id']);
+					$this->adv_off()->Update($adv_up,$adv_up['id']);
+					$up_data = array(
+						'adv_id'    => $adv_id,
+						'utx'       => time(),
+						'from_app'  => 1
+					);
+					$this->up()->InsertUpdate($up_data);
+				}
+				else {
+					return [ 'error'=>1, 'message'=>'Вы превысили лимит бесплатных объявлений. Оплатите это объявление и оно будет поднято автоматически.' ];
+				}
+				
+			}
+			
 			/*
             // GAZETA 
             $has_text = ($last_up['adv_text']) ? true : false;
@@ -611,9 +812,9 @@ class model_adventures extends Model
                 }
             }
 			*/
-            return true;
+            return [ 'success'=>1, 'message'=>'Объявление успешно поднято' ];
         } else {
-            return false;
+            return [ 'error'=>1, 'message'=>'Вы уже поднимали объявление '.date('Y-m-d',$last_up['utx']) ];
         }
     }
 	
@@ -622,13 +823,13 @@ class model_adventures extends Model
      * @param type $adv_id
      * @param type $where
      */
-    public function AdvDelete($adv_id,$where) {
+    public function AdvDelete($adv_id, $where='on') {
 		$this->adv_values->Delete("`adv_id` = {$adv_id}");
         $query = "UPDATE `{$this->getdatabasename()}`.`{$this->gettablename()}` SET `on_off`='0' WHERE `id`='{$adv_id}' LIMIT 1;";
         $this->db()->query($query);
         $query = "UPDATE `{$this->adv_off->getdatabasename()}`.`{$this->adv_off->gettablename()}` SET `on_off`='0' WHERE `id`='{$adv_id}' LIMIT 1;";
         $this->db()->query($query);
-        return true;
+        return [ 'success'=>1, 'message'=>'Ok' ];
         switch ($where) {
             case 'on':
                 $query = "UPDATE `{$this->getdatabasename()}`.`{$this->gettablename()}` SET `on_off`='0' WHERE `id`='{$adv_id}' LIMIT 1;";
@@ -647,11 +848,36 @@ class model_adventures extends Model
         $this->Update(['id'=>$adv_id, 'on_off'=>'4'], $adv_id);
 	}
 	
-	public function getRubrics($city_id=null){
-		$result = $this->mainC->getItemsWhere("`on_off`='1'", 'pos', null, null, 'id, name');
+	public function getRubricsWithAll($city_id=null){
+		$result = $this->mainC->getItemsWhere("`on_off`='1' AND (SELECT COUNT(*) FROM `{$this->getdatabasename()}`.`{$this->gettablename()}` as `adv` WHERE `adv`.`main_catid`=`{$this->mainC->gettablename()}`.`id`)>0", 'pos', null, null, 'id, name');
 		foreach($result as $i => $item){
-			$result[$i]['items'] = $this->subC->getItemsWhere("`on_off`='1' AND `pid`='{$item['id']}'", 'pos', null, null, 'id, name');
+			$sub = $this->subC->getItemsWhere("`on_off`='1' AND `pid`='{$item['id']}' AND (SELECT COUNT(*) FROM `{$this->getdatabasename()}`.`{$this->gettablename()}` as `adv` WHERE `adv`.`sub_catid`=`{$this->subC->gettablename()}`.`id`)>0", 'pos', null, null, 'id, name');
+			$result[$i]['items'] = array_merge([[ 'id'=>'0', 'name'=>'Все']], $sub);
 		}
+		return $result;
+	}
+	
+	public function getRubrics($city_id=null){
+		$result = $this->mainC->getItemsWhere("`on_off`='1' AND (SELECT COUNT(*) FROM `{$this->getdatabasename()}`.`{$this->gettablename()}` as `adv` WHERE `adv`.`main_catid`=`{$this->mainC->gettablename()}`.`id`)>0", 'pos', null, null, 'id, name');
+		foreach($result as $i => $item){
+			$sub = $this->subC->getItemsWhere("`on_off`='1' AND `pid`='{$item['id']}' AND (SELECT COUNT(*) FROM `{$this->getdatabasename()}`.`{$this->gettablename()}` as `adv` WHERE `adv`.`sub_catid`=`{$this->subC->gettablename()}`.`id`)>0", 'pos', null, null, 'id, name');
+			//$result[$i]['items'] = array_merge([[ 'id'=>'0', 'name'=>'Все']], $sub);
+			$result[$i]['items'] = $sub;
+		}
+		return $result;
+	}
+	
+	public function getMainRubrics($city_id=null){
+		$result = $this->mainC->getItemsWhere("`on_off`='1' /*AND (SELECT COUNT(*) FROM `{$this->getdatabasename()}`.`{$this->gettablename()}` as `adv` WHERE `adv`.`main_catid`=`{$this->mainC->gettablename()}`.`id`)>0*/", 'pos', null, null, 'id, name');
+		
+		foreach($result as $i => $item){
+			//$sub = $this->subC->getItemsWhere("`on_off`='1' AND `pid`='{$item['id']}' AND (SELECT COUNT(*) FROM `{$this->getdatabasename()}`.`{$this->gettablename()}` as `adv` WHERE `adv`.`sub_catid`=`{$this->subC->gettablename()}`.`id`)>0", 'pos', null, null, 'id, name');
+		}
+		return $result;
+	}
+	
+	public function getSubRubrics($city_id=null, $main){
+		$result = $this->subC->getItemsWhere("`on_off`='1' AND `pid`='{$main}' /*AND (SELECT COUNT(*) FROM `{$this->getdatabasename()}`.`{$this->gettablename()}` as `adv` WHERE `adv`.`sub_catid`=`{$this->subC->gettablename()}`.`id`)>0*/", 'pos', null, null, 'id, name');
 		return $result;
 	}
 	
@@ -691,6 +917,8 @@ class model_adventures extends Model
 					$min = $this->adv_values->db()->getOne("SELECT MIN(num_val) FROM `new_feo_ua`.`adv_adv_options_values` WHERE `opt_id`={$item['id']}");
 					$max = $this->adv_values->db()->getOne("SELECT MAX(num_val) FROM `new_feo_ua`.`adv_adv_options_values` WHERE `opt_id`={$item['id']}");
 					$field = 'range';
+					$min=($min<0?0:$min);
+					$max=($max<0?0:$max);
 					$items = [
 						'min' => $min,
 						'max' => $max,
@@ -736,12 +964,69 @@ class model_adventures extends Model
 		return $filters;
 	}
 	
+	private function parseDate($result){
+		foreach($result as $i=>$item){
+			$date = $result[$i]['date'];
+			$time = strtotime($date); 
+			$ndate = date("Y-m-d",$time);
+			$today = date("Y-m-d");
+			$diff = $today - $ndate;
+			
+			$datetime1 = new DateTime($ndate);
+			$datetime2 = new DateTime($today);
+			$interval = $datetime1->diff($datetime2);
+			$diff = $interval->format('%a');
+			if($diff<1){
+				$result[$i]['date'] = 'Сегодня в ' .date("H:i", $time);
+			}
+			elseif($diff>=1 and $diff<2) {
+				$result[$i]['date'] = 'Вчера в ' .date("H:i", $time);
+			}
+			else {
+				$result[$i]['date'] = (int)date("d", $time).' ' . $this->monthes[(int)date("m", $time)] . ' ' .date("H:i", $time);
+			}
+		}
+		return $result;
+	}
+	
+	private function parseDateItem($result){
+			$date = $result['date'];
+			$time = strtotime($date); 
+			$ndate = date("Y-m-d",$time);
+			$today = date("Y-m-d");
+			$diff = $today - $ndate;
+			
+			$datetime1 = new DateTime($ndate);
+			$datetime2 = new DateTime($today);
+			$interval = $datetime1->diff($datetime2);
+			$diff = $interval->format('%a');
+			if($diff<1){
+				$result['date'] = 'Сегодня в ' .date("H:i", $time);
+			}
+			elseif($diff>=1 and $diff<2) {
+				$result['date'] = 'Вчера в ' .date("H:i", $time);
+			}
+			else {
+				$result['date'] = (int)date("d", $time).' ' . $this->monthes[(int)date("m", $time)] . ' ' .date("H:i", $time);
+			}
+		return $result;
+	}
+	
 	public function getList($city_id=null, $user_id=null, $main_catid=null, $sub_catid=null, $start=0, $limit=20, $filters = null){
 		$wq = '';
+		if($city_id==1483){
+			$cities = ["1483", "1500537", "1500545", "1500539", "0"];
+			$wq .= " AND `city_id` IN (".(implode(',', $cities)).")";
+		}
+		elseif($city_id==478){
+			$cities = ["478"];
+			$wq .= " AND `city_id` IN (".(implode(',', $cities)).")";
+		}
+		
 		if (!empty($main_catid)) { $wq .= " AND `main_catid` = '{$main_catid}'";}
 		if (!empty($sub_catid)) { $wq .= " AND `sub_catid` = '{$sub_catid}'";}
 		
-		$order='up_time desc';
+		$order='vip desc, up_time desc';
 		if(!empty($filters['filters'])){
 			foreach($filters['filters'] as $filter){
 				if($filter['name']=='photo'){
@@ -800,7 +1085,108 @@ class model_adventures extends Model
 			}
 		}
 		
-		$result = $this->getItemsWhere("`on_off`='1'".$wq, $order, $start, $limit, 'id, caption as name, price, city, json_photos, add_time as date, vip');
+		$result = $this->getItemsWhere("`on_off`='1'".$wq, $order, $start, $limit, 'id, caption as name, price, city, json_photos, up_time as date, vip');
+		
+		foreach($result as $i => $item){
+			$result[$i]['date'] = date("Y-m-d H:i:s", $result[$i]['date']);
+			
+			$photos = json_decode($item['json_photos'], true);
+			if(!empty($photos['main'])){
+				$result[$i]['photo'] = "http://xn--e1asq.xn--p1ai/app_adv/engine/upload/photos/{$photos['main']['id']}_500_310.{$photos['main']['ext']}";
+			}
+			else $result[$i]['photo'] = "http://xn--e1asq.xn--p1ai/app_adv/engine/views/feo_obyavleniya_no_foto.png";
+			unset($result[$i]['json_photos']);
+		}
+		$result = $this->favourite($result, $user_id);
+		$result = $this->parseDate($result);
+		return $result;
+	}
+	
+	public function favourite($result, $user_id){
+		if(!empty($user_id)){
+		foreach($result as $i => $item){
+			$result[$i]['favourites'] = ($this->favourites()->getCountWhere("`adv_id`='{$item['id']}' AND `user_id`='{$user_id}'")>0?1:0);
+		}
+		}
+		return $result;
+	}
+	
+	public function getFor(int $user_id, $start=0, $limit=20){
+		$result = [];
+		$result = $this->get('id, caption as name, price, city, json_photos, up_time as date, vip, on_off as status')
+		->union([$this, $this->adv_off()])->where("`on_off`!='0' AND `user_id`='{$user_id}'")->offset($start)->limit($limit)->order('up_time desc')->commit();;
+		
+		if($start){ $q .= " OFFSET {$start}"; }
+		
+		$result = $this->db()->getAll("
+			SELECT id, caption as name, price, city, json_photos, up_time as date, vip, on_off as status, `look_phone`, `look_email`, `look_url`, `view_count`, `open_count`, `on`
+			FROM (
+				SELECT *, '1' as `on`  FROM `new_feo_ua`.`adv_adventures` WHERE `on_off`!='0' AND `user_id`='{$user_id}' 
+				UNION 
+				SELECT *, '0' as `on` FROM `new_feo_ua`.`adv_adventures_off` WHERE `on_off`!='0' AND `user_id`='{$user_id}'
+			) as `t` ORDER BY up_time desc LIMIT {$limit}".$q);
+		foreach($result as $i => $item){
+			$up_max_time = 60*60*24*7;
+			$up_time = $result[$i]['date'];
+			$result[$i]['color'] = "#000";
+			$limits = $this->getLimits($item['id'], $user_id);
+			switch($result[$i]['status']){
+				case '0': $result[$i]['status_description'] = [ "label" => "Удалено", "color" => "#000" ]; break;
+				case '1': $result[$i]['status_description'] = [ "label" => "Активно", "color" => "#1a8400" ]; break;
+				case '2': $result[$i]['status_description'] = [ "label" => "На модерации", "color" => "#f99500" ]; break;
+				case '3': $result[$i]['status_description'] = [ "label" => "Не прошло модерацию", "color" => "#f90000" ]; break;
+				case '4': $result[$i]['status_description'] = [ "label" => "Ожидает оплату", "color" => "#f99500" ]; break;
+			}
+			
+			$result[$i]['up_time'] = $result[$i]['date'];
+			$result[$i]['up_max_time'] = $up_time+$up_max_time;
+			$result[$i]['time'] = time();
+			if (($up_time+$up_max_time)>time()){
+				$result[$i]['can_up'] = "0"; $result[$i]['can_pay_up'] = "1";
+			}
+			else { 
+				if($limits['portal']['answer']){
+					$result[$i]['can_up'] = "1"; $result[$i]['can_pay_up'] = "0";
+				}
+				else {
+					$result[$i]['can_up'] = "0"; $result[$i]['can_pay_up'] = "1";
+				}
+			}
+			if($result[$i]['on']=='0'){ 
+				$result[$i]['status_description'] = [ "label" => "Выключено", "color" => "#000" ]; 
+				$result[$i]['can_up'] = "0"; 
+				$result[$i]['can_pay_up'] = "0";
+			}
+			
+			if($result[$i]['on']=='0'){
+				$result[$i]['color'] = "#ececec";
+			}
+			if($result[$i]['on']=='0' and $result[$i]['date']<=(time()-3600*24*14)){
+				$result[$i]['can_delete'] = "1";
+			}
+			else {
+				$result[$i]['can_delete'] = "0";
+			}
+			
+			$result[$i]['date'] = date("Y-m-d H:i:s", $result[$i]['date']);
+			$photos = json_decode($item['json_photos'], true);
+			
+			if(!empty($photos['main'])){
+				$result[$i]['photo'] = "http://xn--e1asq.xn--p1ai/app_adv/engine/upload/photos/{$photos['main']['id']}_500_310.{$photos['main']['ext']}";
+			}
+			else $result[$i]['photo'] = "http://xn--e1asq.xn--p1ai/app_adv/engine/views/feo_obyavleniya_no_foto.png";
+			unset($result[$i]['json_photos']);
+		}
+		$result = $this->favourite($result, $user_id);
+		$result = $this->parseDate($result);
+		return $result;
+	}
+	
+	public function getFavourites(int $user_id, $start=0, $limit=20){
+		$result = [];
+		$result = $this->db()->getAll("SELECT adv.id, adv.caption as name, adv.price, adv.city, adv.json_photos, adv.add_time as date, adv.vip FROM `{$this->getdatabasename()}`.`{$this->gettablename()}` as `adv`, `{$this->favourites()->getdatabasename()}`.`{$this->favourites()->gettablename()}` as `favourites` WHERE 
+		adv.id=favourites.adv_id AND favourites.user_id = '{$user_id}' ORDER BY favourites.`date` DESC LIMIT {$limit} OFFSET {$start}
+		");
 		
 		foreach($result as $i => $item){
 			$result[$i]['date'] = date("Y-m-d H:i:s", $result[$i]['date']);
@@ -811,42 +1197,48 @@ class model_adventures extends Model
 			else $result[$i]['photo'] = "http://xn--e1asq.xn--p1ai/app_adv/engine/views/feo_obyavleniya_no_foto.png";
 			unset($result[$i]['json_photos']);
 		}
+		$result = $this->favourite($result, $user_id);
+		$result = $this->parseDate($result);
 		return $result;
 	}
 	
-	public function getFor(int $user_id, $start=0, $limit=20){
-		$result = [];
-		$result = $this->get('id, caption, price, city, json_photos, add_time as date, vip')->union([$this,$this->adv_off()])->where("`on_off`!='0' AND `user_id`='{$user_id}'")->offset($start)->limit($limit)->order('up_time desc')->commit();;
-		foreach($result as $i => $item){
-			$result[$i]['date'] = date("Y-m-d H:i:s", $result[$i]['date']);
-			$photos = json_decode($item['json_photos'], true);
-			if(!empty($photos['main'])){
-				$result[$i]['photo'] = "http://xn--e1asq.xn--p1ai/app_adv/engine/upload/photos/{$photos['main']['id']}_500_310.{$photos['main']['ext']}";
-			}
-			else $result[$i]['photo'] = "http://xn--e1asq.xn--p1ai/app_adv/engine/views/feo_obyavleniya_no_foto.png";
-			unset($result[$i]['json_photos']);
-		}
-		return $result;
+	public function addToFavourite($user_id, $adv_id){
+		$this->favourites()->Delete("`adv_id`='{$adv_id}' AND `user_id`='{$user_id}'");
+		$this->favourites()->Insert([
+			'adv_id' => $adv_id,
+			'user_id' => $user_id,
+			'date' => date('Y-m-d H:i:s'),
+		]);
+		return [ 'success' => 1, 'message' => 'Добавлено в избранное' ];
+	}
+	
+	public function delFavourite($user_id, $adv_id){
+		$this->favourites()->Delete("`adv_id`='{$adv_id}' AND `user_id`='{$user_id}'");
+		return [ 'success' => 1, 'message' =>'Удалено из избранного' ];
 	}
 	
     public function findItem($adv_id) {
-		$cols = "id, user_id, user_name, user_email, user_phone, main_catid, sub_catid, caption, descr, price, add_time as date, on_off as status, json_photos, json_options, vip, city, latitude, longitude";
+		$cols = "id, user_id, user_name, user_email, user_email_show, user_phone, main_catid, sub_catid, caption, descr, price, up_time as date, on_off as status, json_photos, json_options, vip, city, region_id, city_id, latitude, longitude";
         $adv_on = $this->getItemWhere("`id`='{$adv_id}'", $cols);
         if (is_array($adv_on)) {
-            return $adv_on;
+            $adv_on['is_on'] = 1;
+			return $adv_on;
             
         } else {
             $adv_off = $this->adv_off->getItemWhere("`id`='{$adv_id}'", $cols);
             if (is_array($adv_off)) {
+				 $adv_off['is_on'] = 0;
                 return $adv_off;
             }
         }
     }
 	
-	public function getAdv($city_id, $adv_id){
+	public function getAdv($city_id, $adv_id, $user_id=null){
 		$adv = $this->findItem($adv_id);
 		if(!empty($adv)){
 			$adv['date'] = date("Y-m-d H:i:s", $adv['date']);
+			$adv['link'] = "http://xn--e1asq.xn--p1ai/%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F/item_{$adv['id']}";
+
 			$photos = json_decode($adv['json_photos'], true); unset($adv['json_photos']);
 			$adv['photos'] = [];
 			foreach($photos['all'] as $photo){
@@ -860,8 +1252,28 @@ class model_adventures extends Model
 			$options = json_decode($adv['json_options'], true); unset($adv['json_options']);
 			$adv['options'] = [];
 			foreach($options as $option){
+				if($option['type']==5){
+					if(is_array($option['value'])){
+						$option['map'] = $option['value'];
+					}
+					else {
+						$option['map'] = [
+							"address" => null,
+							"longitude" => null,
+							"latitude" => null,
+						];
+					}
+					$option['value'] = null;
+					$option['value_id'] = null;
+				}
 				$adv['options'][] = $option;
+				
 			}
+			if($user_id){
+			$adv['favourites'] = ($this->favourites()->getCountWhere("`adv_id`='{$adv['id']}' AND `user_id`='{$user_id}'")>0?1:0);
+			}
+			
+			
 			$model_gazeta = new model_gazeta();
 			$adv['nums'] = $model_gazeta->advs()->getItemsWhere("`adv_id`={$adv_id}", 'num_id', null, null, "gazeta_id as id, num_id, 
 			(SELECT `num` FROM `{$model_gazeta->nums()->getdatabasename()}`.`{$model_gazeta->nums()->gettablename()}` as `nums` WHERE `nums`.`pid`=`gazeta_id` AND `nums`.`id`=num_id) as `num`, 
@@ -869,6 +1281,7 @@ class model_adventures extends Model
 			published");
 			
 		}
+		return $this->parseDateItem($adv);
 		return $adv;
 	}
 	
@@ -889,6 +1302,116 @@ class model_adventures extends Model
 				'thrumb' => "http://xn--e1asq.xn--p1ai/app_adv/engine/upload/photos/{$id}_500_310.jpeg"
 			];
 		}
+	}
+	
+	public function getWindowOptions($main_id, $sub_id, $selected=null, $user_id=0){
+		$result = $this->db()->getAll("
+                    SELECT
+                        `opt`.id,
+                        `opt`.name,
+                        `opt`.prefix,
+                        `opt`.unit,
+                        `opt`.is_req,
+                        `opt`.data_type as `type`,
+                        `opt`.own_value,
+                        `opt`.show_optid,
+                        `opt`.show_optval
+                        FROM
+                            `new_feo_ua`.`adv_options` AS `opt`
+                        LEFT JOIN `new_feo_ua`.`adv_option_rels` AS `opt_rel` ON `opt_rel`.`opt_id`=`opt`.`id` AND `opt_rel`.`cat_id`='{$sub_id}'
+                    WHERE
+                        `opt_rel`.`id` IS NOT NULL
+                            AND
+                        `opt`.`on_off`='1'
+						AND `opt`.`is_window`='1'
+                    ORDER BY
+                        `opt_rel`.`pos` ASC
+                    ");
+		if(!empty($selected)){
+		$filter = ' AND ( ';
+		foreach($selected as $i => $row){
+			$filter.= ($i!=0?" OR":'')." ((`show_optid`='{$row['id']}' AND `show_optval`='{$row['value']}') OR (`show_optid` IS NULL AND `show_optval` IS NULL) OR (`show_optid`=0 AND `show_optval`=0))";
+		}
+		$filter .= ' ) ';
+		}
+		foreach($result as $i=>$item){
+			if(in_array($item['type'], [0, 1])){
+				$result[$i]['items'] = $this->values->getItemsWhere("`pid`='{$item['id']}'  AND (`on_off`='1' OR (`uid`='{$user_id}' AND `on_off`!='0')) {$filter}", 'pos', null, null, "id, value as name, show_optid, show_optval");
+			}
+			else {
+				$result[$i]['items'] = [];
+			}
+		}
+		
+		return $result;
+	}
+	
+	public function getFormOptions($main_id, $sub_id, $selected=null, $user_id=0){
+		$result = $this->db()->getAll("
+                    SELECT
+                        `opt`.id,
+                        `opt`.name,
+                        `opt`.prefix,
+                        `opt`.unit,
+                        `opt`.is_req,
+                        `opt`.data_type as `type`,
+                        `opt`.own_value,
+                        `opt`.show_optid,
+                        `opt`.show_optval
+                        FROM
+                            `new_feo_ua`.`adv_options` AS `opt`
+                        LEFT JOIN `new_feo_ua`.`adv_option_rels` AS `opt_rel` ON `opt_rel`.`opt_id`=`opt`.`id` AND `opt_rel`.`cat_id`='{$sub_id}'
+                    WHERE
+                        `opt_rel`.`id` IS NOT NULL
+                            AND
+                        `opt`.`on_off`='1'
+						AND `opt`.`is_window`='0'
+                    ORDER BY
+                        `opt_rel`.`pos` ASC
+                    ");
+		if(!empty($selected)){
+		$filter = ' AND ( ';
+		foreach($selected as $i => $row){
+			$filter.= ($i!=0?" OR":'')." ((`show_optid`='{$row['id']}' AND `show_optval`='{$row['value']}') OR (`show_optid` IS NULL AND `show_optval` IS NULL) OR (`show_optid`=0 AND `show_optval`=0))";
+		}
+		$filter .= ' ) ';
+		}
+		foreach($result as $i=>$item){
+			if(in_array($item['type'], [0, 1])){
+				if($item['is_req']==0){
+					$items1 = [["id"=>"0","name"=>"Не выбрано"]];
+				}
+				else {
+					$items1 = [];
+				}
+				$items2 = $this->values->getItemsWhere("`pid`='{$item['id']}'  AND (`on_off`='1' OR (`uid`='{$user_id}' AND `on_off`!='0')) {$filter}", 'pos', null, null, "id, value as name, show_optid, show_optval");
+				$items = array_merge($items1, $items2);
+				$result[$i]['items'] = $items;
+			}
+			else {
+				$result[$i]['items'] = [];
+			}
+		}
+		
+		return $result;
+	}
+	
+	public function getOption($id){
+		$result = $this->options()->getItem($id);
+		/*
+		if(in_array($result['type'], [0, 1])){
+			$result['items'] = $this->values->getItemsWhere("`pid`='{$result['id']}' AND `on_off`='1'", 'pos', null, null, "id, value as name, show_optid, show_optval");
+		}
+		else {
+			$result['items'] = [];
+		}
+		*/
+		return $result;
+	}
+	
+	public function getValue($id){
+		$result = $this->values()->getItem($id);
+		return $result;
 	}
 	
 	public function getOptions($main_id, $sub_id){
@@ -914,7 +1437,12 @@ class model_adventures extends Model
                         `opt_rel`.`pos` ASC
                     ");
 		foreach($result as $i=>$item){
+			if(in_array($item['type'], [0, 1])){
 			$result[$i]['items'] = $this->values->getItemsWhere("`pid`='{$item['id']}' AND `on_off`='1'", 'pos', null, null, "id, value as name, show_optid, show_optval");
+			}
+			else {
+				$result[$i]['items'] = [];
+			}
 		}
 		
 		return $result;
@@ -942,13 +1470,14 @@ class model_adventures extends Model
 			"1500545"=>"Приморский",
 			"1500539"=>"Коктебель",
 		];
-		
-		 $adv_data = array(
+		$count = $this->getCountWhere("`user_id`='{$user_id}' AND `main_catid`='{$data['main_cat']}' AND `sub_catid`='{$data['sub_cat']}' AND `caption`='{$data['caption']}'");
+		if($count==0){
+		$adv_data = array(
             'id'           		=> $id,
             'user_id'           => $user_id,
             'user_name'         => $data['name'],
             'user_email'        => $data['email'],
-            'user_email_show'   => 1,
+            'user_email_show'   => (int)$data['email_show'],
             'user_phone'        => $data['phone'],
             'user_ip'           => getIp(),
             'main_catid'        => $data['main_cat'],
@@ -980,6 +1509,7 @@ class model_adventures extends Model
         );
 		
 		$adv_data['id'] = $this->InsertUpdate($adv_data);
+		$this->ParseNewOption($data['options'], $adv_data['id'], $user_id);
 		$up_data = array(
 			'adv_id'    => $adv_data['id'],
 			'utx'       => time()
@@ -989,13 +1519,14 @@ class model_adventures extends Model
 		$json_photos = ['main'  => false,'all'   => array()];
 		if (count($data['photos'])) {
 			foreach ($data['photos'] as $i=>$photo) {
-				$photo_name = explode('.',$photo_data['name']);
+				$photo_name = explode('.',$photo['name']);
 				$photo_ext =strtolower($photo_name[count($photo_name)-1]);
 				$ismain = ($i==0)?1:0;
-				$new_photo = [ "ismain" => $ismain, "adv_id" => $adv_data['id'] ];
+				$new_photo = [ "ismain" => $ismain,  "adv_id" => $adv_data['id'] ];
 				$this->photos->Update($new_photo, $photo['id']);
+				$new_photo['id'] = $photo['id'];
 				$new_photo['name'] = $photo['name'];
-				$new_photo['ext'] = $photo_ext;
+				$new_photo['ext'] = getExtension5($photo['name']);
 				
 				$json_photos['all'][] = $new_photo;
 				if ($ismain) { $json_photos['main'] = $new_photo; }
@@ -1022,7 +1553,10 @@ class model_adventures extends Model
 		}
 		
 		$result['adv'] = $this->getAdv(null, $adv_data['id']);
-		
+		}
+		else {
+			$result = [ 'error'=>1, 'message'=>'Вы уже добавляли подобное объявление' ];
+		}
 		return $result;
 	}
 	
@@ -1042,11 +1576,9 @@ class model_adventures extends Model
             'user_id'           => $user_id,
             'user_name'         => $data['name'],
             'user_email'        => $data['email'],
-            'user_email_show'   => 1,
+            'user_email_show'   => (int)$data['email_show'],
             'user_phone'        => $data['phone'],
             'user_ip'           => getIp(),
-            'main_catid'        => $data['main_cat'],
-            'sub_catid'         => $data['sub_cat'],
             'caption'           => $data['caption'],
             'adv_text'          => (!empty($data['gazeta-text'])?$data['gazeta-text']:''),
             'descr'             => $data['text'],
@@ -1069,8 +1601,11 @@ class model_adventures extends Model
 			'latitude'			=> (!empty($data['latitude'])?$data['latitude']:'NULL'),
 			'longitude'			=> (!empty($data['longitude'])?$data['longitude']:'NULL'),
         );
+		if($data['main_cat']) $adv_data['main_catid'] = $data['main_cat'];
+		if($data['sub_cat']) $adv_data['sub_catid'] = $data['sub_cat'];
 		$adv_data['id'] = $id;
 		$this->Update($adv_data, $id);
+		$this->adv_off->Update($adv_data, $id);
 		$this->ParseNewOption($data['options'], $id, $user_id);
 		$json_photos = ['main'  => false,'all'   => array()];
 		if (count($data['photos'])) {
@@ -1078,10 +1613,11 @@ class model_adventures extends Model
 				$photo_name = explode('.',$photo['name']);
 				$photo_ext =strtolower($photo_name[count($photo_name)-1]);
 				$ismain = ($i==0)?1:0;
-				$new_photo = [ "id" => $photo['id'], "ismain" => $ismain, "adv_id" => $id ];
+				$new_photo = [ "ismain" => $ismain,  "adv_id" => $adv_data['id'] ];
 				$this->photos->Update($new_photo, $photo['id']);
+				$new_photo['id'] = $photo['id'];
 				$new_photo['name'] = $photo['name'];
-				$new_photo['ext'] = $photo_ext;
+				$new_photo['ext'] = getExtension5($photo['name']);
 				
 				$json_photos['all'][] = $new_photo;
 				if ($ismain) { $json_photos['main'] = $new_photo; }
@@ -1133,6 +1669,7 @@ class model_adventures extends Model
 				 */
 				case 0:
 				case 1:{
+					if(!empty($text_val)){
 					if(empty($option['value_id']) or !is_numeric($option['value_id'])){
 						$val = $this->values->getItemWhere("LOWER(`value`)=LOWER('{$text_val}') AND `pid`='{$option['id']}'");
 						if(!empty($val)){ $option['value_id']=$val['id']; } else { unset($option['value_id']); }
@@ -1154,11 +1691,9 @@ class model_adventures extends Model
 					}
 					
 					if(!empty($option['id'])){
-						$option['value_id'] = $value_id;
-						if(!empty($text_val)){
 						$data=[ 'adv_id'=>$adv_id, 'opt_id'=>$option['id'], 'val_id'=>$option['value_id'], 'text_val'=>$text_val, 'num_val'=>$num_val ];
 						$this->adv_values->Insert($data);
-						}
+					}
 					}
 					break;
 				}
@@ -1169,7 +1704,6 @@ class model_adventures extends Model
 				case 2:
 				case 3:{
 					if(!empty($option['id'])){
-						$option['value_id'] = $value_id;
 						if(!empty($text_val)){
 						$data=[ 'adv_id'=>$adv_id, 'opt_id'=>$option['id'], 'val_id'=>null, 'text_val'=>$text_val, 'num_val'=>$num_val ];
 						$this->adv_values->Insert($data);
@@ -1195,9 +1729,10 @@ class model_adventures extends Model
 				 * 5 - Карта
 				 */
 				case 5: { 
-					$address = $option['value']['address']; 
-					$longitude = number_format($option['value']['longitude'], 4, '.', ''); 
-					$latitude = number_format($option['value']['latitude'], 4, '.', ''); 
+					$map = (!empty($option['map'])?$option['map']:$option['value']);
+					$address = $map['address']; 
+					$longitude = number_format($map['longitude'], 4, '.', ''); 
+					$latitude = number_format($map['latitude'], 4, '.', ''); 
 					$val = $this->values->getItemWhere("LOWER(`value`)=LOWER('address') AND `pid`='{$option['id']}'");
 					if(!empty($val)){ $val_id=$val['id']; } else{ unset($val_id); }
 					if(empty($val_id)){
@@ -1380,7 +1915,7 @@ class model_adventures extends Model
 			$sub_limit 		= $sub_cat['max_free'];
 			$sub_limit_g 	= $sub_cat['max_free_g'];
 			
-			if($main_limit==0 and $sub_limit==0 and $main_limit_g==0 and $sub_limit_g==0){return true;}
+			if($main_limit==0 and $sub_limit==0 and $main_limit_g==0 and $sub_limit_g==0){return [ 'success'=>1, 'message'=>'Ok' ];}
 			else {
 				$advs = $this->getActiveForPhone($advid, $uid, $phone, $main_catid, $sub_catid, $main_limit, $sub_limit, $main_limit_g, $sub_limit_g, $nums);
 				$result = [ "main_limit" => $main_limit, "sub_limit" => $sub_limit, "main_limit_g" => $main_limit_g, "sub_limit_g" => $sub_limit_g, "nums"=> $nums];
@@ -1479,7 +2014,7 @@ class model_adventures extends Model
             );
             $this->claim()->Insert($new_claim);
             return array(
-                'success'   => 'ok'
+                'success'   => 1, "message"=>"OK" 
             );
         } else {
             return ["error"=>1, "message"=>"Already claimed!"];

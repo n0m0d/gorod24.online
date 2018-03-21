@@ -12,8 +12,10 @@ function get_events(){
 	return $_cron_events;
 }
 
-function update_event($event, $result){
-	global $model;
+function update_event($event, $result, $stream=1){
+	$model_cron_tasks = new model_cron_tasks();
+	$model_crons = new model_crons();
+	
 	if(!has_action($event['task_job'])) return false;
 	
 	$data = array(
@@ -28,8 +30,8 @@ function update_event($event, $result){
 		$data['task_end_time']= date('H:i:s');
 	}
 	else{
-		$data['task_next_launch']=date('Y-m-d H:i:s',strtotime($event['task_next_launch_important'])+$event['task_round_period']);
-		$data['task_next_launch_important']=date('Y-m-d H:i:s',strtotime($event['task_next_launch_important'])+$event['task_round_period']);
+		$data['task_next_launch']=date('Y-m-d H:i:s',time()+$event['task_round_period']);
+		$data['task_next_launch_important']=$data['task_next_launch'];
 	}
 	
 	if($event['task_round']==$data['task_launches']){
@@ -40,29 +42,49 @@ function update_event($event, $result){
 		$data['task_end_time']= date('H:i:s');
 	}
 	
-	$update_event = $model->db->query("UPDATE mvc_cron_tasks SET ?u WHERE task_id=?i", $data, $event['task_id']);
+	$update_event = $model_cron_tasks->Update($data, $event['task_id']);
+	$model_crons->Update([
+		'task_id' => $event['task_id'],
+		'start_date' => date('Y-m-d H:i:s'),
+		'end_date' => '0000-00-00 00:00:00'
+	], $stream);
 }
 
-function cron(){
+function cron($stream=1){
 	set_time_limit(120);
-	global $model, $_cron_events;
-	$events = $model->db->GetAll("SELECT * FROM mvc_cron_tasks WHERE task_next_launch != '0000-00-00 00:00:00' AND task_next_launch <= NOW() AND ( (task_end_date>=CURDATE() AND task_end_time>=CURTIME()) OR (task_end_date<='0000-00-00' AND task_end_time<='00:00:00') ) AND task_finished=0 AND task_status=1");
+	global $_cron_events;
+	$model_cron_tasks = new model_cron_tasks();
+	$model_crons = new model_crons();
+	$events = $model_cron_tasks->getItemsWhere("
+		task_next_launch != '0000-00-00 00:00:00' 
+		AND task_next_launch <= NOW() 
+		AND ( (task_end_date>=CURDATE() AND task_end_time>=CURTIME()) OR (task_end_date<='0000-00-00' AND task_end_time<='00:00:00') ) 
+		AND task_finished=0 
+		AND task_status=1
+		AND task_cron_id='{$stream}'
+	", "`task_id`");
+	if(!empty($events)){
 	foreach($events as $i => $event){
+		
 		if(!empty($event['task_job'])){
 			if(!has_action($event['task_job'])) break;
 				ob_start();
-				update_event($event, '');
-				//$model->_log("Запущена CRON задача: \"{$event['task_job']}\", id: {$event['task_id']}", "CRON run");
+				update_event($event, '', $stream);
 				do_action($event['task_job'], $event);
-				//$model->_log("CRON задача завершена: \"{$event['task_job']}\", id: {$event['task_id']}", "CRON end");
 				$result=ob_get_clean();
+				$model_crons->Update([
+					'task_id' => 0,
+					'end_date' => date('Y-m-d H:i:s'),
+				], $stream);
 				echo $result;
 				
 		}
 		else{
-			$model->_log("Ошибка CRON задача: \"{$event['task_job']}\", id: {$event['task_id']} не найдена", "CRON error");
+			echo "Ошибка CRON задача: \"{$event['task_job']}\", id: {$event['task_id']} не найдена";
+			//$model->_log("Ошибка CRON задача: \"{$event['task_job']}\", id: {$event['task_id']} не найдена", "CRON error");
 			return false;
 		}
+	}
 	}
 }
 

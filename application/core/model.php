@@ -202,6 +202,7 @@ class Model
 	private $_sql_union = null;
 	private $_sql_where = null;
 	private $_sql_order = null;
+	private $_sql_group = null;
 	private $_sql_offset = null;
 	private $_sql_limit = null;
 	 
@@ -276,6 +277,7 @@ class Model
 			if ($config['autoregister']) { $this->_auto_register = $config['autoregister']; }
 			
 			$register_config = [
+			"server" => $this->_server,
 			"database" => $this->_database,
             "prefix" => $this->_db_prefix,
             "name" => $this->_register_table,
@@ -703,6 +705,14 @@ class Model
 		return $this;
 	}
 	
+	public function group($group=null){
+		if($group){
+			$this->_sql_group = $group;
+			$this->_sql = true;
+		}
+		return $this;
+	}
+	
 	public function offset($offset=null){
 		if($offset){
 			$this->_sql_offset = $offset;
@@ -726,7 +736,9 @@ class Model
 			$sql1 = "SELECT ";
 			if(!$this->_sql_cols) die('Cols not selected'); else $sql1 .= $this->_sql_cols;
 			if($this->_sql_where) { $sql2 .= " WHERE ".$this->_sql_where; }
-			if(!$this->_sql_from and !$this->_sql_union) die('Table not selected'); else {
+			if(!$this->_sql_from and !$this->_sql_union) {
+				$this->_sql_from = "`{$this->getdatabasename()}`.`{$this->gettablename()}`";
+			}
 				if($this->_sql_from) {
 					$sql1 .= " FROM ". $this->_sql_from;
 				}
@@ -740,8 +752,8 @@ class Model
 				else {
 					$sql = $sql1.$sql2;
 				}
-			}
 			
+			if($this->_sql_group) { $sql .= " GROUP BY ".$this->_sql_group; }
 			if($this->_sql_order) { $sql .= " ORDER BY ".$this->_sql_order; }
 			if($this->_sql_limit) { $sql .= " LIMIT ".$this->_sql_limit; }
 			if($this->_sql_offset) { $sql .= " OFFSET ".$this->_sql_offset; }
@@ -749,6 +761,15 @@ class Model
 			$debug = $this->showDebugQuery($sql);
 			if($debug) return true;
 			try {
+				$this->_sql_cols = null;
+				$this->_sql_where = null;
+				$this->_sql_from = null;
+				$this->_sql_union = null;
+				$this->_sql_group = null;
+				$this->_sql_order = null;
+				$this->_sql_offset = null;
+				$this->_sql_limit = null;
+				$this->_sql = null;
 				switch($type){
 					case 'all' : return $this->_db->getAll($sql); break;
 					case 'row' : return $this->_db->getRow($sql); break;
@@ -805,15 +826,9 @@ class Model
         try {
 			$this->_sql_trys = 1;
             return $this->_db->getRow($query); 
-        } catch (Exception $e) {
-			$this->_sql_trys++;
-			if($this->_sql_trys<=2){
-				$this->initTable();
-				$this->getMySQLFunc($func, $on, $where, $order, $group);
-			}
-			else {
-				die('query fail: '.$query);
-			}
+		} catch (Exception $e) {
+			$this->initTable();
+			die('<p>query fail: <pre>'.$query.'</pre></p><p>'.$e->getMessage().'</p>');
         }
         $ret = $this->_db->getRow($query);
         return (isset($ret['ret']) ? $ret['ret'] : null );
@@ -831,15 +846,9 @@ class Model
         try {
 			$this->_sql_trys = 1;
             return $this->_db->getRow($query); 
-        } catch (Exception $e) {
-			$this->_sql_trys++;
-			if($this->_sql_trys<=2){
-				$this->initTable();
-				$this->getItemWhere($where, $what, $order);
-			}
-			else {
-				die('query fail: '.$query);
-			}
+		} catch (Exception $e) {
+			$this->initTable();
+			die('<p>query fail: <pre>'.$query.'</pre></p><p>'.$e->getMessage().'</p>');
         }
     }
 	
@@ -869,17 +878,12 @@ class Model
         }
 		$debug = $this->showDebugQuery($query);
 		if($debug) return true;
+		
 		try {
-			$this->_sql_trys = 1;
 			return $this->_db->getAll($query);
 		} catch (Exception $e) {
-			if($this->_sql_trys<=2){
-				$this->initTable();
-				$this->getItemsWhere($parse_where, $order, $offset, $limit, $what, $alias);
-			}
-			else {
-				die('query fail: '.$query);
-			}
+			$this->initTable();
+			die('<p>query fail: <pre>'.$query.'</pre></p><p>'.$e->getMessage().'</p>');
         }
     }
 	
@@ -901,13 +905,8 @@ class Model
 			$this->_sql_trys = 1;
 			return $this->_db->getOne($query);
 		} catch (Exception $e) {
-			if($this->_sql_trys<=2){
-				$this->initTable();
-				$this->getCountWhere($parse_where);
-			}
-			else {
-				die('query fail: '.$query);
-			}
+			$this->initTable();
+			die('<p>query fail: <pre>'.$query.'</pre></p><p>'.$e->getMessage().'</p>');
         }
     }
 	
@@ -980,8 +979,8 @@ class Model
 			$curent_data = $this->getItem($id);
 		}
 		$register_data=[
-			'old_data' => json_encode($curent_data),
-			'new_data' => json_encode($data),
+			'old_data' => json_encode($curent_data, JSON_UNESCAPED_UNICODE),
+			'new_data' => json_encode($data, JSON_UNESCAPED_UNICODE),
 			'query' => $this->_db->parse("UPDATE `{$this->_database}`.`{$this->_ct_name}` SET ?u WHERE `{$this->_ct_primary_key}`=?i", $data, $id),
 			'restore_query' => $this->_db->parse("UPDATE `{$this->_database}`.`{$this->_ct_name}` SET ?u WHERE `{$this->_ct_primary_key}`=?i", $curent_data, $id),
 			'date' => date("Y-m-d H:i:s"),
@@ -997,7 +996,7 @@ class Model
 		if($this->_register_model){
 		$register_data=[
 			'old_data' => '',
-			'new_data' => json_encode($data),
+			'new_data' => json_encode($data, JSON_UNESCAPED_UNICODE),
 			'query' => $this->_db->parse("INSERT IGNORE `{$this->_database}`.`{$this->_ct_name}` SET ?u", $data),
 			'restore_query' => (!is_null($id)?$this->_db->parse("DELETE FROM `{$this->_database}`.`{$this->_ct_name}` WHERE `{$this->_ct_primary_key}`=?i", $id):''),
 			'date' => date("Y-m-d H:i:s"),
@@ -1012,7 +1011,7 @@ class Model
 	function registerDeleteQuery($id=0, $curent_data){
 		if($this->_register_model){
 		$register_data=[
-			'old_data' => json_encode($curent_data),
+			'old_data' => json_encode($curent_data, JSON_UNESCAPED_UNICODE),
 			'new_data' => '',
 			'query' => $this->_db->parse("DELETE FROM `{$this->_database}`.`{$this->_ct_name}` WHERE `{$this->_ct_primary_key}`=?i", $id),
 			'restore_query' => $this->_db->parse("INSERT IGNORE `{$this->_database}`.`{$this->_ct_name}` SET ?u", $curent_data),
@@ -1055,15 +1054,8 @@ class Model
 				return $insertId;
 			}
 		} catch (Exception $e) {
-			
-			$this->_sql_trys++;
-			if($this->_sql_trys<=2){
-				$this->initTable();
-				$this->InsertUpdate($data);
-			}
-			else {
-				die('<p>query fail: <pre>'.$query.'</pre></p><p>'.$e->getMessage().'</p>');
-			}
+			$this->initTable();
+			die('<p>query fail: <pre>'.$query.'</pre></p><p>'.$e->getMessage().'</p>');
         }
     }
 	
@@ -1096,14 +1088,8 @@ class Model
 				return $insertId;
 			}
 		} catch (Exception $e) {
-			$this->_sql_trys++;
-			if($this->_sql_trys<=2){
-				$this->initTable();
-				$this->InsertUpdate($data);
-			}
-			else {
-				die('query fail: '.$query);
-			}
+			$this->initTable();
+			die('<p>query fail: <pre>'.$query.'</pre></p><p>'.$e->getMessage().'</p>');
         }
     }
 	
@@ -1138,7 +1124,7 @@ class Model
             }
         }
         $query = "UPDATE `{$this->_database}`.`{$this->_ct_name}` SET ?u WHERE {$where}";
-        $query = $this->_db->parse($query, $values);
+		$query = $this->_db->parse($query, $values);
         
 		if ($this->_is_debug_query OR $this->_is_debug_query_once) {
             echo "Model query: {$query}";
@@ -1150,14 +1136,9 @@ class Model
 			if($this->_register_table AND ($this->_register_query OR $this->_register_query_once OR $this->_auto_register)) { $register_id = $this->registerQuery('Update', $values, $where); $this->_register_query_once = false;}
 			$this->_db->fquery($query);
 			return true;
-        } catch (Exception $e) {
-			if($this->_sql_trys<=2){
-				$this->initTable();
-				$this->Update($data, $ids);
-			}
-			else {
-				die('query fail: '.$query);
-			}
+		} catch (Exception $e) {
+			$this->initTable();
+			die('<p>query fail: <pre>'.$query.'</pre></p><p>'.$e->getMessage().'</p>');
         }
     }
 
@@ -1171,13 +1152,8 @@ class Model
 				if($this->_register_table AND ($this->_register_query OR $this->_register_query_once OR $this->_auto_register)) { $register_id = $this->registerQuery('Delete', null, "`{$this->_ct_primary_key}`={$id}"); $this->_register_query_once = false;}
 				return $this->_db->fquery($query);
 			} catch (Exception $e) {
-				if($this->_sql_trys<=2){
-					$this->initTable();
-					$this->Delete($id);
-				}
-				else {
-					die('query fail: '.$query);
-				}
+				$this->initTable();
+				die('<p>query fail: <pre>'.$query.'</pre></p><p>'.$e->getMessage().'</p>');
 			}
         }
 		elseif(is_array($id)) {
@@ -1194,13 +1170,8 @@ class Model
 				if($this->_register_table AND ($this->_register_query OR $this->_register_query_once OR $this->_auto_register)) { $register_id = $this->registerQuery('Delete', null, $id); $this->_register_query_once = false;}
 				return $this->_db->fquery($query);
 			} catch (Exception $e) {
-				if($this->_sql_trys<=2){
-					$this->initTable();
-					$this->Delete($id);
-				}
-				else {
-					die('query fail: '.$query);
-				}
+				$this->initTable();
+				die('<p>query fail: <pre>'.$query.'</pre></p><p>'.$e->getMessage().'</p>');
 			}
         }
     }
@@ -1226,5 +1197,110 @@ class Model
         return $this->_db->getOne($query);
     }
 	
+    /**
+     * Перемещает строку в указаном направлении
+     * 
+     * 
+     */
+    public function MoveRow($id, $dir, $where_query="",$pos_c="pos") {
+        return $this->sql_row_move($dir,$this->_ct_name,array($this->_ct_primary_key,$id),$where_query,$pos_c,$this);
+    }
+    /**
+     * Перемещает строку вверх на одну позицию
+     * @param type $id
+     * @param type $where_query
+     * @param type $pos_c
+     * @return type
+     */
+    public function MoveRowUp($id,$where_query="",$pos_c="pos") {
+        return $this->MoveRow($id,"up",$where_query,$pos_c);
+    }
+    /**
+     * Перемещает строку вниз на одну позицию
+     * @param type $id
+     * @param type $where_query
+     * @param type $pos_c
+     * @return type
+     */
+    public function MoveRowDown($id,$where_query="",$pos_c="pos") {
+        return $this->MoveRow($id,"down",$where_query,$pos_c);
+    }
+    /**
+     * Перемещает строку в самый вверх
+     * @param type $id
+     * @param type $where_query
+     * @param type $pos_c
+     * @return type
+     */
+    public function MoveRowTop($id,$where_query="",$pos_c="pos") {
+        return $this->MoveRow($id,"top",$where_query,$pos_c);
+    }
+    /**
+     * Перемещает строку в самый низ
+     * @param type $id
+     * @param type $where_query
+     * @param type $pos_c
+     * @return type
+     */
+    public function MoveRowBottom($id,$where_query="",$pos_c="pos") {
+        return $this->MoveRow($id,"bottom",$where_query,$pos_c);
+    }
+    /*
+        dir = { up , down , top , bottom }
+        table = work table
+        id =  array ( 0 => cell , 1 => value )
+        where_query = string
+    */
+    private function sql_row_move($dir,$table,$id,$where_query,$pos_c="pos",&$me){
+        $query = "SELECT * FROM `$table` WHERE `{$id[0]}`='{$id[1]}' ".(($where_query) ?  " AND ($where_query) " : '' )." LIMIT 1;";
+       // echo $query;
+        $rows = $this->_db->getRow($query);
+        if (is_array($rows))
+        {
+            switch ($dir)
+            {
+                case 'up':
+                    $query="SELECT * FROM `$table` WHERE `$pos_c`<'{$rows[$pos_c]}' ".(($where_query) ? " AND ($where_query) " : '')." ORDER BY `$pos_c` DESC LIMIT 1;";
+                    //echo $query;
+                    $rows_ = $this->_db->getRow($query);
+                    if (is_array($rows_))
+                    {
+                        $query="UPDATE `$table` SET `$pos_c`='{$rows_[$pos_c]}' WHERE `{$id[0]}`='{$rows[$id[0]]}' LIMIT 1;";
+                        $this->_db->query($query);
+                        $query="UPDATE `$table` SET `$pos_c`='{$rows[$pos_c]}' WHERE `{$id[0]}`='{$rows_[$id[0]]}' LIMIT 1;";
+                        $this->_db->query($query);
+                    }
+                    break;
+                case 'down':
+                    $query="SELECT * FROM `$table` WHERE `$pos_c`>'{$rows[$pos_c]}' ".(($where_query) ? " AND ($where_query) " : "")."  ORDER BY `$pos_c` ASC LIMIT 1;";
+                    $rows_ = $this->_db->getRow($query);
+                    if (is_array($rows_))
+                    {
+                        $query="UPDATE `$table` SET `$pos_c`='{$rows_[$pos_c]}' WHERE `{$id[0]}`='{$rows[$id[0]]}' LIMIT 1;";
+                        $this->_db->query($query);
+                        $query="UPDATE `$table` SET `$pos_c`='{$rows[$pos_c]}' WHERE `{$id[0]}`='{$rows_[$id[0]]}' LIMIT 1;";
+                        $this->_db->query($query);
+                    }
+                    break;
+                case 'top':
+                    $query="SELECT `$pos_c` AS `p` FROM `$table` WHERE ".(($where_query) ? $where_query : '1')." ORDER BY `$pos_c` ASC LIMIT 1;";
+                    $pos = $this->_db->getOne($query);
+                    $pos--;
+                    $query="UPDATE `$table` SET `$pos_c`='$pos' WHERE `{$id[0]}`='{$id[1]}' LIMIT 1;";
+                    $this->_db->query($query);
+                    break;
+                case 'bottom':
+                    $query="SELECT `$pos_c` AS `p` FROM `$table` WHERE ".(($where_query) ? $where_query : '1')." ORDER BY `$pos_c` DESC LIMIT 1;";
+                    $pos = $this->_db->getOne($query);
+                    $pos++;
+                    $query="UPDATE `$table` SET `$pos_c`='$pos' WHERE `{$id[0]}`='{$id[1]}' LIMIT 1;";
+                    $this->_db->query($query);
+                    break;
+            }
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
 ?>

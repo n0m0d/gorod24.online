@@ -31,9 +31,9 @@ $GLOBALS['DB']['localhost'] = new SafeMySQL(array(
 
 $GLOBALS['DB']['radio'] = new SafeMySQL(array(	
 									'host'    => 'localhost',
-									'user'    => 'gsp1_U0yLhS',
-									'pass'    => 'jtHBHeulv0BTGjDhRfSKtAtK0i6MzKh6',
-									'db'      => 'gsp1.feomedia.ru',
+									'user'    => 'feofm_a0Qy8Y',
+									'pass'    => 'ynMwEDKzubezv76l44A0101w7OZnDfOl',
+									'db'      => 'feo.fm',
 									'charset' => 'utf8'
 								)) or die('База данных не доступна...');
 								
@@ -79,4 +79,5 @@ include_once APPDIR .'/application/core/email_work.php'; // EMAIL рассылк
 include_once APPDIR .'/application/core/render-admin-page.php'; // Создатель страницы админки
 include_once APPDIR .'/application/core/rss.php'; // rss генератор
 include_once APPDIR .'/application/core/idna_convert.class.php'; // rss генератор
+include_once APPDIR .'/application/core/Ftp.php'; // rss генератор
 ?>

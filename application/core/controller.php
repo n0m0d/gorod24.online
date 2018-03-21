@@ -20,7 +20,8 @@ class Controller {
 	public $cache_file_name;
 	
 	function __construct()	{
-		
+		$this->POST = self::varChek($_POST);
+		$this->GET = self::varChek($_GET);
 	}
 	
 	function __destruct(){
@@ -64,7 +65,7 @@ class Controller {
 			$result[$key] = self::varChek($value);
 		}}
 		else{
-			$result = ($adminmode==false) ? trim(addslashes(htmlspecialchars(strip_tags(urldecode ($variable))))) : trim(addslashes(urldecode($variable)));
+			$result = ($adminmode==false) ? trim(addslashes(htmlspecialchars(strip_tags(urldecode($variable))))) : trim(addslashes(urldecode($variable)));
 		}
 		return $result;
 	}

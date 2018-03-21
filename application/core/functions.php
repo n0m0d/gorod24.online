@@ -9,6 +9,148 @@ $_cron_events = array();
 $_email_workers_events = array();
 $locale = "ru_RU";
 
+function send_mobile_notification_request($user_mobile_info, $payload_info)
+{
+    //Default result
+    $result = -1;
+    //Change depending on where to send notifications - either production or development
+    $pem_preference = "production";
+    $pem_preference = "dev";
+    $user_device_type = $user_mobile_info['user_device_type'];
+    $user_device_key = $user_mobile_info['user_mobile_token'];
+
+    if ($user_device_type == "iOS") {
+
+        $apns_url = NULL;
+        $apns_cert = NULL;
+        //Apple server listening port
+        $apns_port = 2195;
+
+        if ($pem_preference == "production") {
+            $apns_url = 'gateway.push.apple.com';
+            $apns_cert = APPDIR.'/cert-prod.pem';
+        }
+        //develop .pem
+        else {
+            $apns_url = 'gateway.sandbox.push.apple.com';
+            $apns_cert = APPDIR.'/dev.com.mobilemedia.city24.pem';
+        }
+
+        $stream_context = stream_context_create();
+        stream_context_set_option($stream_context, 'ssl', 'local_cert', $apns_cert);
+
+        $apns = stream_socket_client('ssl://' . $apns_url . ':' . $apns_port, $error, $error_string, 2, STREAM_CLIENT_CONNECT, $stream_context);
+        $apns_message = chr(0) . chr(0) . chr(32) . pack('H*', str_replace(' ', '', $user_device_key)) . chr(0) . chr(strlen($payload_info)) . $payload_info;
+
+        if ($apns) {
+            $result = fwrite($apns, $apns_message);
+        }
+        @socket_close($apns);
+        @fclose($apns);
+
+    }
+    else if ($user_device_type == "Android") {
+
+        // API access key from Google API's Console
+        define('API_ACCESS_KEY', 'AIzaSyBJzJojEluuaslC1IZ03v4nagl-xY3cmyk');
+
+        // prep the bundle
+        $msg = array
+        (
+            'message' 	=> json_decode($payload_info)->aps->alert,
+            'title'		=> 'This is a title. title',
+            'subtitle'	=> 'This is a subtitle. subtitle',
+            'tickerText'=> 'Ticker text here...Ticker text here...Ticker text here',
+            'vibrate'	=> 1,
+            'sound'		=> 1,
+            'largeIcon'	=> 'large_icon',
+            'smallIcon'	=> 'small_icon'
+        );
+        $fields = array
+        (
+            //'registration_ids' 	=> array($user_device_key),
+            'to' 	=> $user_device_key,
+            'data' => $msg
+        );
+
+        $headers = array
+        (
+            'Authorization: key=' . API_ACCESS_KEY,
+            'Content-Type: application/json'
+        );
+
+        $ch = curl_init();
+        curl_setopt( $ch,CURLOPT_URL, 'https://android.googleapis.com/gcm/send' );
+        curl_setopt( $ch,CURLOPT_POST, true );
+        curl_setopt( $ch,CURLOPT_HTTPHEADER, $headers );
+        curl_setopt( $ch,CURLOPT_RETURNTRANSFER, false );
+        curl_setopt( $ch,CURLOPT_SSL_VERIFYPEER, false );
+        curl_setopt( $ch,CURLOPT_POSTFIELDS, json_encode( $fields ) );
+        $result = curl_exec($ch);
+        curl_close($ch);
+    }
+    return $result > 0;
+}
+
+//Create json file to send to Apple/Google Servers with notification request and body
+function create_payload_json($message) {
+    //Badge icon to show at users ios app icon after receiving notification
+    $badge = "0";
+    $sound = 'default';
+
+    $payload = array();
+    $payload['aps'] = array('alert' => $message, 'badge' => intval($badge), 'sound' => $sound);
+    return json_encode($payload);
+}
+
+/**
+ * @param $http2ch          the curl connection
+ * @param $http2_server     the Apple server url
+ * @param $apple_cert       the path to the certificate
+ * @param $app_bundle_id    the app bundle id
+ * @param $message          the payload to send (JSON)
+ * @param $token            the token of the device
+ * @return mixed            the status code
+ */
+function sendHTTP2Push($http2ch, $http2_server, $apple_cert, $app_bundle_id, $message, $token) {
+ 
+    // url (endpoint)
+    $url = "{$http2_server}/3/device/{$token}";
+ 
+    // certificate
+    $cert = realpath($apple_cert);
+    // headers
+    $headers = array(
+        "apns-topic: {$app_bundle_id}",
+        "User-Agent: My Sender"
+    );
+ 
+    // other curl options
+    curl_setopt_array($http2ch, array(
+        CURLOPT_URL => $url,
+        CURLOPT_PORT => 443,
+        CURLOPT_HTTPHEADER => $headers,
+        CURLOPT_POST => TRUE,
+        CURLOPT_POSTFIELDS => $message,
+        CURLOPT_RETURNTRANSFER => TRUE,
+        CURLOPT_TIMEOUT => 30,
+        CURLOPT_SSL_VERIFYPEER => false,
+        CURLOPT_SSLCERT => $cert,
+        CURLOPT_HEADER => 1
+    ));
+ 
+    // go...
+    $result = curl_exec($http2ch);
+    if ($result === FALSE) {
+      throw new Exception("Curl failed: " .  curl_error($http2ch));
+    }
+ 
+    // get response
+    $status = curl_getinfo($http2ch, CURLINFO_HTTP_CODE);
+ 
+    return $status;
+}
+
 function checkTableExist($table_name = null){
 	if($table_name){
 		$result = $GLOBALS['DB']['localhost']->getRow("SHOW TABLE STATUS WHERE NAME = '{$table_name}';");
@@ -162,6 +304,7 @@ function calculateTheDistance ($φA, $λA, $φB, $λB) {
  
     return $dist;
 }
+
 /**
  * Возвращает сумму прописью
  * @author runcore
@@ -236,6 +379,12 @@ function getExtension5($filename) {
 	return strtolower(array_pop(explode(".", $filename)));
 }
 
+function multiexplode($delimiters, $string) {
+    $ready = str_replace($delimiters, $delimiters[0], $string);
+    $launch = explode($delimiters[0], $ready);
+    return  $launch;
+}
+
 function generatePassword($length=9, $strength=8) {
  $vowels = 'aeuy';
  $consonants = 'bdghjmnpqrstvz';
@@ -288,6 +437,8 @@ function check_phone($phone){
 	$phone = str_replace(')','',$phone);
 	$phone = str_replace(' ','',$phone);
 	$phone = str_replace('-','',$phone);
+	$phone = str_replace('+','',$phone);
+	$phone = '+'.$phone;
 	/* +380506937572 */
 	if (substr($phone,0,1)!='+') return false;
 	if (strlen($phone)!=13 and strlen($phone)!=12) return false;
@@ -302,12 +453,13 @@ function check_phone($phone){
 		номер
 	*/
 	$code_contry = substr($phone,0,2);
-	if($code_contry=="+7"){
+	if($code_contry=="+7" or $code_contry=="+8"){
+		$phone = str_replace('+8','+7',$phone);
 		$code = substr($phone,0,2);
 		$oppe = substr($phone,2,3);
 		$numm = substr($phone,5);
-	
-	}else{
+	}
+	else{
 		$code = substr($phone,0,3);
 		$oppe = substr($phone,3,3);
 		$numm = substr($phone,6);
@@ -349,7 +501,7 @@ function isBot(&$botname = ''){
     'liveinternet.ru','xml-sitemaps.com','agama','metadatalabs.com','h1.hrn.ru',
     'googlealert.com','seo-rus.com','yaDirectBot','yandeG','yandex',
     'yandexSomething','Copyscape.com','AdsBot-Google','domaintools.com',
-    'Nigma.ru','bing.com','dotnetdotcom'
+    'Nigma.ru','bing.com','dotnetdotcom','OdklBot','odnoklassniki.ru','vk.com','facebook.com','instagram.com'
   );
   foreach($bots as $bot)
     if(stripos($_SERVER['HTTP_USER_AGENT'], $bot) !== false){
@@ -802,7 +954,7 @@ function testIp($ip, $permitted='127.0.0.1'){
 	
 }
 
-function image_resize($source_path, $destination_path, $newwidth,$newheight = FALSE,  $quality = 100) {
+function image_resize($source_path, $destination_path, $newwidth, $newheight = FALSE,  $quality = 100) {
     ini_set("gd.jpeg_ignore_warning", 1); // иначе на некотоых jpeg-файлах не работает
     list($oldwidth, $oldheight, $type) = getimagesize($source_path);
 
@@ -820,6 +972,97 @@ function image_resize($source_path, $destination_path, $newwidth,$newheight = FA
     
     imagecopyresampled($destination_resource, $src_resource, 0, 0, 0, 0, $newwidth, $newheight, $oldwidth, $oldheight);
     
+    if ($type = 2) { # jpeg
+        imageinterlace($destination_resource, 1); // чересстрочное формирование изображение
+        imagejpeg($destination_resource, $destination_path, $quality);      
+    }
+    else { # gif, png
+        $function = "image$typestr";
+        $function($destination_resource, $destination_path);
+    }
+    
+    imagedestroy($destination_resource);
+    imagedestroy($src_resource);
+}
+
+//resize and crop image by center
+function resize_crop_image($max_width, $max_height, $source_file, $dst_dir, $quality = 80){
+    $imgsize = getimagesize($source_file);
+    $width = $imgsize[0];
+    $height = $imgsize[1];
+    $mime = $imgsize['mime'];
+ 
+    switch($mime){
+        case 'image/gif':
+            $image_create = "imagecreatefromgif";
+            $image = "imagegif";
+            break;
+ 
+        case 'image/png':
+            $image_create = "imagecreatefrompng";
+            $image = "imagepng";
+            $quality = 7;
+            break;
+ 
+        case 'image/jpeg':
+            $image_create = "imagecreatefromjpeg";
+            $image = "imagejpeg";
+            $quality = 80;
+            break;
+ 
+        default:
+            return false;
+            break;
+    }
+	
+    list($oldwidth, $oldheight, $type) = getimagesize($source_file);
+	
+    if (!$max_height) { $max_height = round($max_width * $oldheight/$oldwidth); }
+    elseif (!$max_width) { $max_width = round($max_height * $oldwidth/$oldheight); }
+     
+    $dst_img = imagecreatetruecolor($max_width, $max_height);
+    $src_img = $image_create($source_file);
+     
+    $width_new = $height * $max_width / $max_height;
+    $height_new = $width * $max_height / $max_width;
+    //if the new width is greater than the actual width of the image, then the height is too large and the rest cut off, or vice versa
+    if($width_new > $width){
+        //cut point by height
+        $h_point = (($height - $height_new) / 2);
+        //copy image
+        imagecopyresampled($dst_img, $src_img, 0, 0, 0, $h_point, $max_width, $max_height, $width, $height_new);
+    }else{
+        //cut point by width
+        $w_point = (($width - $width_new) / 2);
+        imagecopyresampled($dst_img, $src_img, 0, 0, $w_point, 0, $max_width, $max_height, $width_new, $height);
+    }
+     
+    $image($dst_img, $dst_dir, $quality);
+ 
+    if($dst_img)imagedestroy($dst_img);
+    if($src_img)imagedestroy($src_img);
+}
+//usage example
+//resize_crop_image(100, 100, "test.jpg", "test.jpg");
+
+function image_crop($source_path, $destination_path, $x, $y, $w, $h, $percent,  $quality = 100) {
+    ini_set("gd.jpeg_ignore_warning", 1); // иначе на некотоых jpeg-файлах не работает
+    list($oldwidth, $oldheight, $type) = getimagesize($source_path);
+
+    switch ($type) {
+        case IMAGETYPE_JPEG: $typestr = 'jpeg'; break;
+        case IMAGETYPE_GIF: $typestr = 'gif' ;break;
+        case IMAGETYPE_PNG: $typestr = 'png'; break;
+    }
+    $function = "imagecreatefrom$typestr";if (!function_exists($function)) return false;
+    $src_resource = $function($source_path);
+    
+	$nw = $w * $percent / 100;
+	$nh = $h * $percent / 100;
+	
+    $destination_resource = imagecreatetruecolor($nw,$nh);
+    imagecopyresampled($destination_resource, $src_resource, 0, 0, $x, $y, $nw, $nh, $w, $h);
+
     if ($type = 2) { # jpeg
         imageinterlace($destination_resource, 1); // чересстрочное формирование изображение
         imagejpeg($destination_resource, $destination_path, $quality);      

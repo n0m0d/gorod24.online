@@ -11,6 +11,9 @@ class controller_index extends Controller
 	
 	public function renderPage($post){
 		$this->view = new View('page.tpl');
+		$this->view->setHeaderView('header-page.tpl');
+		$this->view->setFooterView('footer-page.tpl');
+		
 		$meta = json_decode($post['post_meta'], true);
 		$this->view->headers['title'] = $meta['title'];
 		$this->view->headers['description'] = $meta['description'];
